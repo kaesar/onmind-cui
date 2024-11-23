@@ -1,0 +1,27 @@
+:root {
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+  /*--vaadin-input-field-background: #ffffff;*/
+}
+
+body {
+  margin: 0;
+  display: grid;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/*as-box {
+  background-color: whitesmoke !important;
+  box-shadow: 0 3px 10px 0 #aaa;
+  border-radius: 5px;
+}*/
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+}

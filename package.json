@@ -1,0 +1,21 @@
+{
+  "name": "onmind-cui",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@vaadin/vaadin-core": "^24.3.12",
+    "lit": "^3.1.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0",
+    "vite-plugin-lib-inject-css": "^2.1.1"
+  }
+}

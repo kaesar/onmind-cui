@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + Lit + TS</title>
+    <link rel="stylesheet" href="./src/index.css" />
+    <script type="module" src="/src/index.ts"></script>
+<!--     <script type="module" src="/src/as-box.ts"></script>
+    <script type="module" src="/src/as-button.ts"></script>
+    <script type="module" src="/src/as-input.ts"></script>
+    <script type="module" src="/src/as-check.ts"></script>
+    <script type="module" src="/src/as-radio.ts"></script>
+    <script type="module" src="/src/as-select.ts"></script>
+ -->  </head>
+  <body>
+    <as-box>
+      <as-input label="Name" value="John"></as-input>
+      <as-input label="Last Name" value="Doe"></as-input>
+      <as-check label="Check me"></as-check>
+      <as-radio options="label=A,value=A;label=B,value=B;label=C,value=C"></as-radio>
+      <as-select options="label=A,value=A;label=B,value=B;label=C,value=C"></as-select>
+      <as-confirm label="Tap me" message="Hey there!"></as-confirm>
+    </as-box>
+  </body>
+</html>
