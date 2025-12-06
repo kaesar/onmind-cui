@@ -18,10 +18,33 @@
     <as-box>
       <as-input label="Name" value="John"></as-input>
       <as-input label="Last Name" value="Doe"></as-input>
+      <as-date label="Birth Date" placeholder="Select date"></as-date>
+      <as-time label="Meeting Time" placeholder="Select time"></as-time>
       <as-check label="Check me"></as-check>
+      <as-switch label="Switch me"></as-switch>
       <as-radio options="label=A,value=A;label=B,value=B;label=C,value=C"></as-radio>
       <as-select options="label=A,value=A;label=B,value=B;label=C,value=C"></as-select>
+      <as-complete label="Buscar" options="label=JavaScript,value=js;label=TypeScript,value=ts;label=Python,value=py;label=Java,value=java"></as-complete>
       <as-confirm label="Tap me" message="Hey there!"></as-confirm>
+      <as-datagrid id="table" theme="light"></as-datagrid>
     </as-box>
+    <script type="module">
+      const table = document.getElementById('table');
+      table.data = Array.from({length: 57}, (_, i) => ({
+        id: i + 1,
+        name: `Usuario ${i + 1}`,
+        email: `user${i + 1}@ejemplo.com`,
+        role: ['Admin', 'Editor', 'Viewer'][Math.floor(Math.random()*3)],
+        status: Math.random() > 0.5 ? 'Activo' : 'Inactivo'
+      }));
+      table.columns = [
+        { key: 'name', header: 'Nombre' },
+        { key: 'email', header: 'Correo' },
+        { key: 'role', header: 'Rol' },
+        { key: 'status', header: 'Estado' }
+      ];
+      table.selectable = true;
+      table.filterable = true;
+    </script>
   </body>
 </html>

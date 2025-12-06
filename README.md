@@ -12,16 +12,21 @@ The idea with Native Web Componets is use with any other tecnologies because thi
 
 Component | Description
 -- | --
+`as-complete` | Autocomplete/ComboBox component
 `as-box` | Similar to Card to group components inside
 `as-button` | Common Button component
-`as-check` | Common Check component
+`as-check` | Common Checkbox component
 `as-confirm` | Dialog with Modal with confirm action
+`as-datagrid` | Data grid/table with sorting, filtering and pagination
+`as-date` | Date picker component
 `as-embed` | Component to Embed content for the web (url)
 `as-image` | Common Image component
-`as-input` | Common Input component
-`as-radio` | Common Radio component
-`as-select` | Combo-box or Dropdown component
-`as-text` | Input with TextArea component
+`as-input` | Common Input component (text, email, password)
+`as-radio` | Common Radio button group component
+`as-select` | Dropdown/Select component
+`as-switch` | Toggle switch component
+`as-text` | TextArea component
+`as-time` | Time picker component
 `as-video` | Common Video component (for YouTube links)
 
 > Tu use, you can include this `tags` in simple Markdown files or Web Apps.

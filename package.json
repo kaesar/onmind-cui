@@ -10,12 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@vaadin/vaadin-core": "^24.3.12",
-    "lit": "^3.1.2"
+    "@vaadin/vaadin-core": "^24.9.6",
+    "lit": "^3.3.1"
   },
   "devDependencies": {
     "typescript": "^5.2.2",
-    "vite": "^5.2.0",
-    "vite-plugin-lib-inject-css": "^2.1.1"
+    "vite": "^7.2.6",
+    "vite-plugin-lib-inject-css": "^2.2.2"
   }
 }

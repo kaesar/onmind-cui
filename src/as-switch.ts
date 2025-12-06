@@ -1,0 +1,53 @@
+import { LitElement, html, css } from 'lit'
+import { customElement, property } from 'lit/decorators.js'
+import '@vaadin/checkbox'
+
+@customElement('as-switch')
+export class AsSwitch extends LitElement {
+    @property({ type: String })
+    label = ''
+    @property({ type: Boolean })
+    checked = false
+
+    static styles = css`
+      vaadin-checkbox::part(checkbox) {
+        width: 36px;
+        height: 20px;
+        border-radius: 10px;
+        background: #ccc;
+        position: relative;
+        transition: background 0.2s;
+      }
+      vaadin-checkbox[checked]::part(checkbox) {
+        background: var(--lumo-primary-color, #1976d2);
+      }
+      vaadin-checkbox::part(checkbox)::after {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: white;
+        top: 2px;
+        left: 2px;
+        transition: transform 0.2s;
+      }
+      vaadin-checkbox[checked]::part(checkbox)::after {
+        transform: translateX(16px);
+      }
+    `
+
+    protected override render() {
+        return html`
+        <vaadin-checkbox
+          label="${this.label}"
+          ?checked="${this.checked}"
+        ></vaadin-checkbox>`
+    }
+}
+
+declare global {
+    interface HTMLElementTagNameMap {
+      'as-switch': AsSwitch
+    }
+}
