@@ -6,19 +6,10 @@ export default defineConfig(({ command, mode }) => {
   return {
     plugins: [ libInjectCss() ],
     build: {
+      minify: 'terser',
       lib: {
         entry: 'src/index.ts',
         formats: ["es"],
-        /*entry: {
-          'as-box': 'src/as-box.ts',
-          'as-button': 'src/as-button.ts',
-          'as-check': 'src/as-check.ts',
-          'as-confirm': 'src/as-confirm.ts',
-          'as-input': 'src/as-input.ts',
-          'as-radio': 'src/as-radio.ts',
-          'as-select': 'src/as-select.ts',
-          'as-text': 'src/as-text.ts',
-        },*/
       },
       rollupOptions: {
         external: mode === "production" ? "" : /^lit-element/,

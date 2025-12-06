@@ -3,6 +3,7 @@ import { customElement, property } from 'lit/decorators.js'
 import '@vaadin/text-field'
 import '@vaadin/email-field'
 import '@vaadin/password-field'
+import '@vaadin/number-field'
 
 @customElement('as-input')
 export class AsInput extends LitElement {
@@ -31,6 +32,14 @@ export class AsInput extends LitElement {
                 value="${this.value}" 
                 placeholder="${this.placeholder}">
               </vaadin-password-field>`
+
+        if (this.kind === 'number')
+            return html`
+              <vaadin-number-field class="as-field"
+                label="${this.label}"
+                value="${this.value}" 
+                placeholder="${this.placeholder}">
+              </vaadin-number-field>`
 
         return html`
           <vaadin-text-field class="as-field"

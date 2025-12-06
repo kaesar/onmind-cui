@@ -259,7 +259,7 @@ export class AsDatagrid extends LitElement {
       color: var(--table-text);
     }
     th.select-col {
-      width: 1.5rem;
+      width: 1ch;
       padding: 0;
       cursor: default;
     }
@@ -269,7 +269,7 @@ export class AsDatagrid extends LitElement {
       border-bottom: 1px solid var(--table-border);
     }
     td.select-col {
-      width: 1.5rem;
+      width: 1ch;
       text-align: center;
       padding: 0;
     }
