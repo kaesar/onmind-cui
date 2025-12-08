@@ -8,12 +8,16 @@ export class AsCheck extends LitElement {
     label = ''
     @property({ type: String })
     value = ''
+    @property({ type: String })
+    theme = ''
 
     protected override render() {
+        const vaadinTheme = this.theme === 'dark' ? 'contrast' : ''
         return html`
         <vaadin-checkbox
           label="${this.label}"
           .value="${this.value}"
+          theme="${vaadinTheme}"
         ></vaadin-checkbox>`
     }
 }

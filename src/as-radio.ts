@@ -11,6 +11,8 @@ export class AsRadio extends LitElement {
     value = ''
     @property({ type: String })
     options = 'label=A,value=A;label=B,value=B;label=C,value=C'
+    @property({ type: String })
+    theme = ''
     @property({ type: Array })
     get items(): Item[] {
         let data: Item[] = (new Abstract()).planeDeserialize(this.options)
@@ -18,8 +20,9 @@ export class AsRadio extends LitElement {
     }
 
     protected override render() {
+        const vaadinTheme = this.theme === 'dark' ? 'horizontal contrast' : 'horizontal'
         return html`
-        <vaadin-radio-group label="${this.label}" theme="horizontal">
+        <vaadin-radio-group label="${this.label}" theme="${vaadinTheme}">
             ${this.items.map(item => html`
                 <vaadin-radio-button value="${item.value}" label="${item.label}" ?checked="${this.value === item.value}"></vaadin-radio-button>
             `)}

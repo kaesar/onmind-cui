@@ -8,13 +8,21 @@ export class AsSwitch extends LitElement {
     label = ''
     @property({ type: Boolean })
     checked = false
+    @property({ type: String })
+    theme = ''
 
     static styles = css`
+      :host {
+        --switch-bg-off: #ccc;
+      }
+      :host([theme="dark"]) {
+        --switch-bg-off: #4b5563;
+      }
       vaadin-checkbox::part(checkbox) {
         width: 36px;
         height: 20px;
         border-radius: 10px;
-        background: #ccc;
+        background: var(--switch-bg-off);
         position: relative;
         transition: background 0.2s;
       }
@@ -38,10 +46,12 @@ export class AsSwitch extends LitElement {
     `
 
     protected override render() {
+        const vaadinTheme = this.theme === 'dark' ? 'contrast' : ''
         return html`
         <vaadin-checkbox
           label="${this.label}"
           ?checked="${this.checked}"
+          theme="${vaadinTheme}"
         ></vaadin-checkbox>`
     }
 }

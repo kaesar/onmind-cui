@@ -30,8 +30,13 @@ export class AsButton extends LitElement {
         duration: 3500,
         theme: 'contrast',
       });
-    else
+    else {
+      this.dispatchEvent(new CustomEvent('button-tap', {
+        bubbles: true,
+        composed: true
+      }))
       console.log('as-button clicked!')
+    }
   }
 }
 

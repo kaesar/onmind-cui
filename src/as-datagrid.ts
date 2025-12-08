@@ -206,7 +206,7 @@ export class AsDatagrid extends LitElement {
       --table-border-strong: #4b5563;
       --table-row-even: #111827;
       --table-row-hover: #1e3a5f;
-      --table-row-selected: #1e40af;
+      --table-row-selected: #1d4ed8;
       --input-bg: #374151;
       --input-border: #4b5563;
       --button-bg: #374151;
@@ -226,20 +226,26 @@ export class AsDatagrid extends LitElement {
       --button-hover: #f3f4f6;
     }
     .container {
-      padding: 1rem;
       background: var(--table-bg);
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      overflow: hidden;
       color: var(--table-text);
     }
+    .container > .header {
+      padding: 0 0.5rem;
+    }
+    .container > .header:first-child {
+      padding-top: 0.4rem;
+    }
     .header {
-      margin-bottom: 1rem;
+      padding: 0 1.5rem 1rem 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .title {
-      font-size: var(--lumo-font-size-xl, 1.25rem);
+      font-size: 1.25rem;
       font-weight: 600;
     }
     .table-wrapper {
@@ -248,33 +254,46 @@ export class AsDatagrid extends LitElement {
     }
     table {
       width: 100%;
-      border-collapse: collapse;
+    }
+    thead {
+      background-color: var(--table-row-even);
+      border-bottom: 1px solid var(--table-border);
     }
     th {
-      padding: 0.5rem 0.75rem;
+      padding: 0.5rem 0.5rem;
       text-align: left;
-      border-bottom: 2px solid var(--table-border);
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
       cursor: pointer;
       user-select: none;
       color: var(--table-text);
+      opacity: 0.7;
     }
     th.select-col {
       width: 1ch;
-      padding: 0;
+      padding: 0.5rem 0;
       cursor: default;
     }
-    td {
-      padding: 0.5rem 0.75rem;
-      color: var(--table-text);
+    tbody tr {
       border-bottom: 1px solid var(--table-border);
-    }
-    td.select-col {
-      width: 1ch;
-      text-align: center;
-      padding: 0;
+      transition: background-color 0.15s;
     }
     tbody tr:nth-child(even) {
       background-color: var(--table-row-even);
+    }
+
+    td {
+      padding: 0.625rem 0.5rem;
+      font-size: 0.9375rem;
+      color: var(--table-text);
+    }
+    td.select-col {
+      width: 1ch;
+      padding: 0.5rem 0;
+      text-align: center;
+      font-size: 0.75rem;
     }
     tbody tr:hover {
       background-color: var(--table-row-hover);
@@ -286,7 +305,8 @@ export class AsDatagrid extends LitElement {
       background-color: var(--table-row-selected) !important;
     }
     .pagination {
-      margin-top: 1rem;
+      padding: 0.6rem 0.5rem 0.5rem 0.5rem;
+      border-top: 1px solid var(--table-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
