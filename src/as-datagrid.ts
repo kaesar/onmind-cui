@@ -1,6 +1,5 @@
 import { LitElement, html, css } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
-import '@vaadin/text-field'
 
 interface Column {
   key: string
@@ -33,6 +32,9 @@ export class AsDatagrid extends LitElement {
   @property({ type: Boolean })
   filterable = false
 
+  @property({ type: Boolean })
+  actionable = false
+
   @state()
   private accessor _filter = ''
 
@@ -46,7 +48,7 @@ export class AsDatagrid extends LitElement {
   private accessor _page = 0
 
   @state()
-  private accessor _selectedId: any = null
+  private accessor _selectedRow: any = null
 
   private _getFilteredData() {
     if (!this._filter) return this.data
@@ -84,7 +86,7 @@ export class AsDatagrid extends LitElement {
 
   private _selectRow(row: any) {
     if (!this.selectable) return
-    this._selectedId = row.id
+    this._selectedRow = row
     this.dispatchEvent(new CustomEvent('row-select', {
       detail: { row, id: row.id },
       bubbles: true,
@@ -105,14 +107,13 @@ export class AsDatagrid extends LitElement {
           <div class="header">
             ${this.title ? html`<div class="title">${this.title}</div>` : html`<div></div>`}
             ${this.filterable ? html`
-              <vaadin-text-field
+              <input
+                type="text"
+                class="filter-input"
                 placeholder="🔍"
                 .value=${this._filter}
-                @value-changed=${(e: any) => { this._filter = e.detail.value; this._page = 0 }}
-                clear-button-visible
-                theme="contrast"
-                style="max-width: 400px; ${this.theme === 'dark' ? '--vaadin-input-field-background: #374151; color: #f3f4f6;' : ''}"
-              ></vaadin-text-field>
+                @input=${(e: Event) => { this._filter = (e.target as HTMLInputElement).value; this._page = 0 }}
+              />
             ` : ''}
           </div>
         ` : ''}
@@ -121,23 +122,37 @@ export class AsDatagrid extends LitElement {
           <table>
           <thead>
             <tr>
-              ${this.selectable ? html`<th class="select-col"></th>` : ''}
               ${this.columns.map(col => html`
                 <th @click=${() => this._sort(col.key)}>
                   ${col.header}
                   ${this._sortKey === col.key ? (this._sortDir === 1 ? ' ↑' : ' ↓') : ''}
                 </th>
               `)}
+              ${this.actionable ? html`<th class="action-col"></th>` : ''}
             </tr>
           </thead>
           <tbody>
             ${rows.map(row => html`
               <tr 
-                class="${this.selectable ? 'selectable' : ''} ${this._selectedId === row.id ? 'selected' : ''}"
+                class="${this.selectable ? 'selectable' : ''} ${this._selectedRow === row ? 'selected' : ''}"
                 @click=${() => this._selectRow(row)}
               >
-                ${this.selectable ? html`<td class="select-col">${this._selectedId === row.id ? '»' : ''}</td>` : ''}
-                ${this.columns.map(col => html`<td>${row[col.key]}</td>`)}
+                ${this.columns.map((col, idx) => html`<td class="${idx === 0 ? 'first-col' : ''}">${row[col.key]}</td>`)}
+                ${this.actionable ? html`
+                  <td class="action-col">
+                    <button class="action-btn" @click=${(e: Event) => {
+                      e.stopPropagation()
+                      if (this.selectable) {
+                        this._selectedRow = row
+                      }
+                      this.dispatchEvent(new CustomEvent('row-action', {
+                        detail: { row, id: row.id },
+                        bubbles: true,
+                        composed: true
+                      }))
+                    }}>⋮</button>
+                  </td>
+                ` : ''}
               </tr>
             `)}
           </tbody>
@@ -179,26 +194,12 @@ export class AsDatagrid extends LitElement {
       --table-row-even: #f9fafb;
       --table-row-hover: #e0f2fe;
       --table-row-selected: #dbeafe;
-      --input-bg: white;
+      --input-bg: var(--lumo-contrast-10pct, #f5f5f5);
       --input-border: #d1d5db;
       --button-bg: white;
       --button-hover: #f3f4f6;
     }
-    @media (prefers-color-scheme: dark) {
-      :host {
-        --table-bg: #1f2937;
-        --table-text: #f3f4f6;
-        --table-border: #374151;
-        --table-border-strong: #4b5563;
-        --table-row-even: #111827;
-        --table-row-hover: #1e3a5f;
-        --table-row-selected: #1e40af;
-        --input-bg: #374151;
-        --input-border: #4b5563;
-        --button-bg: #374151;
-        --button-hover: #4b5563;
-      }
-    }
+
     :host([theme="dark"]) {
       --table-bg: #1f2937;
       --table-text: #f3f4f6;
@@ -220,7 +221,7 @@ export class AsDatagrid extends LitElement {
       --table-row-even: #f9fafb;
       --table-row-hover: #e0f2fe;
       --table-row-selected: #dbeafe;
-      --input-bg: white;
+      --input-bg: var(--lumo-contrast-10pct, #f5f5f5);
       --input-border: #d1d5db;
       --button-bg: white;
       --button-hover: #f3f4f6;
@@ -260,7 +261,7 @@ export class AsDatagrid extends LitElement {
       border-bottom: 1px solid var(--table-border);
     }
     th {
-      padding: 0.5rem 0.5rem;
+      padding: 0.5rem 0.25rem;
       text-align: left;
       font-size: 0.75rem;
       font-weight: 500;
@@ -271,11 +272,7 @@ export class AsDatagrid extends LitElement {
       color: var(--table-text);
       opacity: 0.7;
     }
-    th.select-col {
-      width: 1ch;
-      padding: 0.5rem 0;
-      cursor: default;
-    }
+
     tbody tr {
       border-bottom: 1px solid var(--table-border);
       transition: background-color 0.15s;
@@ -285,15 +282,39 @@ export class AsDatagrid extends LitElement {
     }
 
     td {
-      padding: 0.625rem 0.5rem;
+      padding: 0.5rem 0.25rem;
       font-size: 0.9375rem;
       color: var(--table-text);
     }
-    td.select-col {
-      width: 1ch;
-      padding: 0.5rem 0;
+    td.first-col {
+      border-left: 3px solid transparent;
+    }
+    tbody tr.selected td.first-col {
+      border-left-color: #1676f3;
+    }
+    th.action-col {
+      width: 0.5rem;
       text-align: center;
-      font-size: 0.75rem;
+      cursor: default;
+      padding: 0;
+    }
+    td.action-col {
+      width: 0.5rem;
+      text-align: center;
+      padding: 0;
+    }
+    .action-btn {
+      background: transparent;
+      border: none;
+      color: var(--table-text);
+      cursor: pointer;
+      font-size: 1.25rem;
+      padding: 0;
+      border-radius: 4px;
+      line-height: 1;
+    }
+    .action-btn:hover {
+      background: var(--option-hover, #f3f4f6);
     }
     tbody tr:hover {
       background-color: var(--table-row-hover);
@@ -303,6 +324,7 @@ export class AsDatagrid extends LitElement {
     }
     tbody tr.selected {
       background-color: var(--table-row-selected) !important;
+      height: auto;
     }
     .pagination {
       padding: 0.6rem 0.5rem 0.5rem 0.5rem;
@@ -316,6 +338,20 @@ export class AsDatagrid extends LitElement {
       display: flex;
       gap: 0.5rem;
       align-items: center;
+    }
+    .filter-input {
+      max-width: 400px;
+      padding: 0.5rem 0.75rem;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.9375rem;
+      font-family: inherit;
+      background: var(--input-bg, white);
+      color: var(--table-text);
+      outline: none;
+    }
+    .filter-input:focus {
+      border-color: var(--focus-color, #3b82f6);
     }
     button {
       padding: 0.5rem 1rem;

@@ -1,8 +1,8 @@
 # Guía de Componentes OnMind-CUI
 
-Conjunto selecto de componentes web como Web Components (custom elements) basados en **Lit** & **VaadinUI**, orientados al uso común en formularios y UIs de datos (para diversos propósitos/destinos). Los componentes se registran como custom elements con nombres que comienzan por `as-` (minúsculas) y siempre se usan como etiquetas HTML completas (con cierre).
+Conjunto selecto de componentes web como Web Components (custom elements) basados en **Lit** & **VaadinUI**, orientados al uso común en formularios y UIs de datos (para diversos propósitos/destinos). Los componentes se registran como custom elements con nombres que comienzan por `as-` (minúsculas) y siempre se usan como etiquetas **HTML** completas (con cierre).
 
-**CUI** significa: Cross User Interface
+**CUI** significa: Core/Cross/Common User Interface
 
 Componentes incluidos (nombres de etiqueta):
 

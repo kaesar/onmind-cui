@@ -35,7 +35,6 @@ export class AsButton extends LitElement {
         bubbles: true,
         composed: true
       }))
-      console.log('as-button clicked!')
     }
   }
 }

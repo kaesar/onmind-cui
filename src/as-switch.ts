@@ -13,10 +13,10 @@ export class AsSwitch extends LitElement {
 
     static styles = css`
       :host {
-        --switch-bg-off: #ccc;
+        --switch-bg-off: var(--lumo-contrast-10pct, #f5f5f5);
       }
       :host([theme="dark"]) {
-        --switch-bg-off: #4b5563;
+        --switch-bg-off: var(--lumo-contrast-10pct, #2a2a2a);
       }
       vaadin-checkbox::part(checkbox) {
         width: 36px;
