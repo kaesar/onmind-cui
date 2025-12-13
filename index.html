@@ -18,6 +18,7 @@
     <as-box>
       <as-input label="Name" value="John"></as-input>
       <as-input label="Last Name" value="Doe"></as-input>
+      <as-text label="Comments" rows="3" placeholder="Enter your comments"></as-text>
       <as-date label="Birth Date" placeholder="Select date"></as-date>
       <as-time label="Meeting Time" placeholder="Select time"></as-time>
       <as-check label="Check me"></as-check>
@@ -26,7 +27,7 @@
       <as-select options="label=A,value=A;label=B,value=B;label=C,value=C"></as-select>
       <as-complete label="Buscar" options="label=JavaScript,value=js;label=TypeScript,value=ts;label=Python,value=py;label=Java,value=java"></as-complete>
       <as-confirm label="Tap me" message="Hey there!"></as-confirm>
-      <as-datagrid id="table" theme="light"></as-datagrid>
+      <as-datagrid id="table" actionable></as-datagrid>
     </as-box>
     <script type="module">
       const table = document.getElementById('table');
@@ -46,6 +47,10 @@
       table.selectable = true;
       table.filterable = true;
       table.pageable = true;
+      table.addEventListener('row-action', (e) => {
+        console.log('Action on row:', e.detail);
+        alert(`Action on: ${e.detail.row.name}`);
+      });
     </script>
   </body>
 </html>

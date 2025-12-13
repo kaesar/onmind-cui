@@ -194,7 +194,7 @@ export class AsDatagrid extends LitElement {
       --table-row-even: #f9fafb;
       --table-row-hover: #e0f2fe;
       --table-row-selected: #dbeafe;
-      --input-bg: var(--lumo-contrast-10pct, #f5f5f5);
+      --input-bg: white;
       --input-border: #d1d5db;
       --button-bg: white;
       --button-hover: #f3f4f6;
@@ -221,7 +221,7 @@ export class AsDatagrid extends LitElement {
       --table-row-even: #f9fafb;
       --table-row-hover: #e0f2fe;
       --table-row-selected: #dbeafe;
-      --input-bg: var(--lumo-contrast-10pct, #f5f5f5);
+      --input-bg: white;
       --input-border: #d1d5db;
       --button-bg: white;
       --button-hover: #f3f4f6;
@@ -342,7 +342,7 @@ export class AsDatagrid extends LitElement {
     .filter-input {
       max-width: 400px;
       padding: 0.5rem 0.75rem;
-      border: none;
+      border: 1px solid var(--table-border-strong);
       border-radius: 4px;
       font-size: 0.9375rem;
       font-family: inherit;

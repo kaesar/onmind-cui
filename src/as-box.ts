@@ -1,6 +1,5 @@
-import { LitElement, html } from 'lit'
+import { LitElement, html, css } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
-import '@vaadin/vertical-layout'
 
 @customElement('as-box')
 export class AsBox extends LitElement {
@@ -9,6 +8,19 @@ export class AsBox extends LitElement {
 
     @property({ type: String })
     theme = 'light'
+
+    static styles = css`
+      :host {
+        display: block;
+      }
+      .box {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1rem;
+        border-radius: 5px;
+      }
+    `
 
     protected override render() {
         const isDim = this.dim === 'true'
@@ -31,11 +43,19 @@ export class AsBox extends LitElement {
         }
         
         return html`
-            <vaadin-vertical-layout
-                style="background-color: ${bgColor}; box-shadow: ${boxShadow}; border-radius: 5px; color: ${color};"
-                theme="spacing-xs padding">
-                <slot></slot>
-            </vaadin-vertical-layout>`
+            <div class="box" style="background-color: ${bgColor}; box-shadow: ${boxShadow}; color: ${color};">
+                <slot @slotchange="${this._handleSlotChange}"></slot>
+            </div>`
+    }
+
+    private _handleSlotChange(e: Event) {
+        const slot = e.target as HTMLSlotElement
+        const elements = slot.assignedElements()
+        elements.forEach(el => {
+            if (this.theme === 'dark') {
+                el.setAttribute('theme', 'dark')
+            }
+        })
     }
 }
 
