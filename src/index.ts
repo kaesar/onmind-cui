@@ -14,6 +14,8 @@ import { AsText } from './as-text'
 import { AsVideo } from './as-video'
 import { AsDatagrid } from './as-datagrid'
 import { AsComplete } from './as-complete'
+import { AsEvent } from './as-event'
+import { AsPopup } from './as-popup'
 
 export {
     AsBox,
@@ -31,5 +33,7 @@ export {
     AsText,
     AsVideo,
     AsDatagrid,
-    AsComplete
+    AsComplete,
+    AsEvent,
+    AsPopup
 }

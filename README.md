@@ -20,8 +20,10 @@ Component | Description
 `as-datagrid` | Data grid/table with sorting, filtering and pagination
 `as-date` | Date picker component
 `as-embed` | Component to Embed content for the web (url)
+`as-event` | Input with icon to trigger an event for modal or menu
 `as-image` | Common Image component
-`as-input` | Common Input component (text, email, password)
+`as-input` | Common Input component (text, email, password, number)
+`as-popup` | Context menu/popup component with smart positioning
 `as-radio` | Common Radio button group component
 `as-select` | Dropdown/Select component
 `as-switch` | Toggle switch component

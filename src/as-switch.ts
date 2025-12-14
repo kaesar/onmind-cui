@@ -1,6 +1,5 @@
 import { LitElement, html, css } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
-import '@vaadin/checkbox'
 
 @customElement('as-switch')
 export class AsSwitch extends LitElement {
@@ -13,23 +12,27 @@ export class AsSwitch extends LitElement {
 
     static styles = css`
       :host {
-        --switch-bg-off: var(--lumo-contrast-10pct, #f5f5f5);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-family: -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", Helvetica, Arial, sans-serif;
+        font-size: 0.9375rem;
+        color: var(--text-color, #1f2937);
       }
-      :host([theme="dark"]) {
-        --switch-bg-off: var(--lumo-contrast-10pct, #2a2a2a);
-      }
-      vaadin-checkbox::part(checkbox) {
+      .switch {
+        position: relative;
         width: 36px;
         height: 20px;
+        background: var(--switch-bg-off, #e8eaed);
         border-radius: 10px;
-        background: var(--switch-bg-off);
-        position: relative;
         transition: background 0.2s;
+        cursor: pointer;
       }
-      vaadin-checkbox[checked]::part(checkbox) {
-        background: var(--lumo-primary-color, #1976d2);
+      .switch.checked {
+        background: var(--switch-bg-on, #1676f3);
       }
-      vaadin-checkbox::part(checkbox)::after {
+      .switch::after {
         content: '';
         position: absolute;
         width: 16px;
@@ -40,19 +43,31 @@ export class AsSwitch extends LitElement {
         left: 2px;
         transition: transform 0.2s;
       }
-      vaadin-checkbox[checked]::part(checkbox)::after {
+      .switch.checked::after {
         transform: translateX(16px);
+      }
+      :host([theme="dark"]) {
+        --text-color: #e5e5e5;
+        --switch-bg-off: #525252;
+        --switch-bg-on: #1676f3;
       }
     `
 
     protected override render() {
-        const vaadinTheme = this.theme === 'dark' ? 'contrast' : ''
         return html`
-        <vaadin-checkbox
-          label="${this.label}"
-          ?checked="${this.checked}"
-          theme="${vaadinTheme}"
-        ></vaadin-checkbox>`
+          <div
+            class="switch ${this.checked ? 'checked' : ''}"
+            @click="${() => {
+              this.checked = !this.checked
+              this.dispatchEvent(new CustomEvent('checked-changed', {
+                detail: { value: this.checked },
+                bubbles: true,
+                composed: true
+              }))
+            }}"
+          ></div>
+          ${this.label ? html`<label>${this.label}</label>` : ''}
+        `
     }
 }
 

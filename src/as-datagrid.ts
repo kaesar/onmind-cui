@@ -140,13 +140,13 @@ export class AsDatagrid extends LitElement {
                 ${this.columns.map((col, idx) => html`<td class="${idx === 0 ? 'first-col' : ''}">${row[col.key]}</td>`)}
                 ${this.actionable ? html`
                   <td class="action-col">
-                    <button class="action-btn" @click=${(e: Event) => {
+                    <button class="action-btn" @click=${(e: MouseEvent) => {
                       e.stopPropagation()
                       if (this.selectable) {
                         this._selectedRow = row
                       }
                       this.dispatchEvent(new CustomEvent('row-action', {
-                        detail: { row, id: row.id },
+                        detail: { row, id: row.id, event: e },
                         bubbles: true,
                         composed: true
                       }))
@@ -195,7 +195,8 @@ export class AsDatagrid extends LitElement {
       --table-row-hover: #e0f2fe;
       --table-row-selected: #dbeafe;
       --input-bg: var(--lumo-contrast-10pct, #f5f5f5);
-      --input-border: #d1d5db;
+      --input-border: var(--lumo-contrast-20pct, #d1d5db);
+      --input-text: var(--lumo-body-text-color, #1f2937);
       --button-bg: white;
       --button-hover: #f3f4f6;
     }
@@ -208,8 +209,9 @@ export class AsDatagrid extends LitElement {
       --table-row-even: #111827;
       --table-row-hover: #1e3a5f;
       --table-row-selected: #1d4ed8;
-      --input-bg: #374151;
-      --input-border: #4b5563;
+      --input-bg: var(--lumo-contrast-10pct, #374151);
+      --input-border: var(--lumo-contrast-20pct, #4b5563);
+      --input-text: var(--lumo-body-text-color, #f3f4f6);
       --button-bg: #374151;
       --button-hover: #4b5563;
     }
@@ -221,8 +223,9 @@ export class AsDatagrid extends LitElement {
       --table-row-even: #f9fafb;
       --table-row-hover: #e0f2fe;
       --table-row-selected: #dbeafe;
-      --input-bg: var(--lumo-contrast-10pct, #f5f5f5);
-      --input-border: #d1d5db;
+      --input-bg: var(--lumo-contrast-10pct, white);
+      --input-border: var(--lumo-contrast-20pct, #d1d5db);
+      --input-text: var(--lumo-body-text-color, #1f2937);
       --button-bg: white;
       --button-hover: #f3f4f6;
     }
@@ -340,18 +343,19 @@ export class AsDatagrid extends LitElement {
       align-items: center;
     }
     .filter-input {
-      max-width: 400px;
+      width: 160px;
       padding: 0.5rem 0.75rem;
       border: none;
-      border-radius: 4px;
-      font-size: 0.9375rem;
-      font-family: inherit;
-      background: var(--input-bg, white);
-      color: var(--table-text);
+      border-radius: var(--lumo-border-radius-m, 4px);
+      font-size: var(--lumo-font-size-m, 0.9375rem);
+      font-family: var(--lumo-font-family);
+      background: var(--input-bg);
+      color: var(--input-text);
       outline: none;
     }
     .filter-input:focus {
-      border-color: var(--focus-color, #3b82f6);
+      border: 1px solid var(--lumo-primary-color, #3b82f6);
+      box-shadow: 0 0 0 2px var(--lumo-primary-color-10pct, rgba(59, 130, 246, 0.1));
     }
     button {
       padding: 0.5rem 1rem;
