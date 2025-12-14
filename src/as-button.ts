@@ -1,7 +1,5 @@
-import { LitElement, html } from 'lit'
+import { LitElement, html, css } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
-import '@vaadin/button'
-import { Notification } from '@vaadin/notification'
 
 @customElement('as-button')
 export class AsButton extends LitElement {
@@ -14,28 +12,54 @@ export class AsButton extends LitElement {
   @property({ type: String })
   message = ''
 
+  static styles = css`
+    button {
+      padding: 0.5rem 1rem;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      font-family: -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", Helvetica, Arial, sans-serif;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    button:hover {
+      background: #2563eb;
+    }
+    button:active {
+      background: #1d4ed8;
+    }
+  `
+
   render() {
     return html`
-      <vaadin-button @click=${this.onClick} theme="primary" style="cursor: pointer;">
+      <button @click=${this.onClick}>
         ${this.label}
-      </vaadin-button>`
+      </button>`
   }
 
   private onClick() {
     if (!!this.link)
       location.assign(this.link)
     else if (!!this.message)
-      Notification.show(this.message, {
-        position: 'bottom-center',
-        duration: 3500,
-        theme: 'contrast',
-      });
+      this.showNotification(this.message)
     else {
       this.dispatchEvent(new CustomEvent('button-tap', {
         bubbles: true,
         composed: true
       }))
+      console.log('as-button clicked!')
     }
+  }
+
+  private showNotification(msg: string) {
+    const notification = document.createElement('div')
+    notification.textContent = msg
+    notification.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1f2937;color:white;padding:0.75rem 1.5rem;border-radius:4px;box-shadow:0 4px 6px rgba(0,0,0,0.1);z-index:9999;'
+    document.body.appendChild(notification)
+    setTimeout(() => notification.remove(), 3500)
   }
 }
 

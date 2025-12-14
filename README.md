@@ -1,14 +1,12 @@
 # OnMind-CUI
 
-Common User Interface (**CUI**), Native Web Components for cross use in **UI** with Content Pages (like Markdown) and Simple Web Apps. Based in a tiny selection from [**Vaadin Web Components**](https://github.com/vaadin/web-components).
-
-> **Vaadin** is a technology, well known in the **java** world, that enable **UI** capabilities with web standards and Fullstack development.
+Core User Interface (**CUI**), Native Web Components for cross use in **UI** with Content Pages (like Markdown) and Simple Web Apps. Inspired in [**Vaadin Web Components**](https://github.com/vaadin/web-components) but not based on it.
 
 These components are using technologies like **Lit** and **Typescript**, it allows the standard way to include as `html` tags in simple Markdown (`.md`) files, for example with `markdown-it` parser (or similar feature in `remark` and others parsers).
 
 The idea with Native Web Componets is use with any other tecnologies because this is like simple `html` tag (with a Shadow DOM), and it could encapsulates even the styles.
 
-**OnMInd-CUI** includes just this...
+**OnMind-CUI** includes just this...
 
 Component | Description
 -- | --

@@ -1,9 +1,5 @@
 import { LitElement, html, css } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
-import '@vaadin/text-field'
-import '@vaadin/email-field'
-import '@vaadin/password-field'
-import '@vaadin/number-field'
 
 @customElement('as-input')
 export class AsInput extends LitElement {
@@ -20,52 +16,66 @@ export class AsInput extends LitElement {
 
     static styles = css`
       :host {
-        --vaadin-input-field-background: var(--lumo-contrast-10pct);
+        display: block;
+        font-family: -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", Helvetica, Arial, sans-serif;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+      label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--label-color, #374151);
+      }
+      input {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        font-size: 0.9375rem;
+        font-family: inherit;
+        background: var(--input-bg, #e8eaed);
+        color: var(--text-color, #1a1a1a);
+        outline: none;
+        transition: border-color 0.15s;
+      }
+      input:focus {
+        border-color: var(--focus-color, #1676f3);
+      }
+      input::placeholder {
+        color: var(--placeholder-color, #737373);
+      }
+      :host([theme="dark"]) {
+        --label-color: #e5e5e5;
+        --border-color: #525252;
+        --input-bg: #1f2937;
+        --text-color: #e5e5e5;
+        --placeholder-color: #737373;
+        --focus-color: #1676f3;
       }
     `
 
     render() {
-        const vaadinTheme = this.theme === 'dark' ? 'contrast' : ''
-        const style = this.theme === 'dark' ? '--vaadin-input-field-background: #374151; --vaadin-input-field-label-color: #f3f4f6; color: #f3f4f6;' : ''
-        
-        if (this.kind === 'email')
-            return html`
-              <vaadin-email-field class="as-field"
-                label="${this.label}"
-                value="${this.value}" 
-                placeholder="${this.placeholder}"
-                theme="${vaadinTheme}"
-                style="${style}">
-              </vaadin-email-field>`
-
-        if (this.kind === 'password')
-            return html`
-              <vaadin-password-field class="as-field"
-                label="${this.label}"
-                value="${this.value}" 
-                placeholder="${this.placeholder}"
-                theme="${vaadinTheme}"
-                style="${style}">
-              </vaadin-password-field>`
-
-        if (this.kind === 'number')
-            return html`
-              <vaadin-number-field class="as-field"
-                label="${this.label}"
-                value="${this.value}" 
-                placeholder="${this.placeholder}"
-                theme="${vaadinTheme}"
-                style="${style}">
-              </vaadin-number-field>`
-
+        const type = this.kind === 'text' ? 'text' : this.kind === 'email' ? 'email' : this.kind === 'password' ? 'password' : this.kind === 'number' ? 'number' : 'text'
         return html`
-          <vaadin-text-field class="as-field"
-            label="${this.label}"
-            value="${this.value}" 
-            placeholder="${this.placeholder}"
-            theme="${vaadinTheme}"
-            style="${style}">
-          </vaadin-text-field>`
+          <div class="field">
+            ${this.label ? html`<label>${this.label}</label>` : ''}
+            <input
+              type="${type}"
+              .value="${this.value}"
+              placeholder="${this.placeholder}"
+              @input="${(e: Event) => {
+                this.value = (e.target as HTMLInputElement).value
+                this.dispatchEvent(new CustomEvent('value-changed', {
+                  detail: { value: this.value },
+                  bubbles: true,
+                  composed: true
+                }))
+              }}"
+            />
+          </div>
+        `
     }
 }
 

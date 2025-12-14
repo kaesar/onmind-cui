@@ -18,6 +18,7 @@
     <as-box>
       <as-input label="Name" value="John"></as-input>
       <as-input label="Last Name" value="Doe"></as-input>
+      <as-text label="Comments" rows="3" placeholder="Enter your comments"></as-text>
       <as-date label="Birth Date" placeholder="Select date"></as-date>
       <as-time label="Meeting Time" placeholder="Select time"></as-time>
       <as-check label="Check me"></as-check>
@@ -25,8 +26,9 @@
       <as-radio options="label=A,value=A;label=B,value=B;label=C,value=C"></as-radio>
       <as-select options="label=A,value=A;label=B,value=B;label=C,value=C"></as-select>
       <as-complete label="Buscar" options="label=JavaScript,value=js;label=TypeScript,value=ts;label=Python,value=py;label=Java,value=java"></as-complete>
+      <as-event id="eventField" label="Acciones" value="Seleccionar acción" event="show-menu"></as-event>
       <as-confirm label="Tap me" message="Hey there!"></as-confirm>
-      <as-datagrid id="table" theme="light"></as-datagrid>
+      <as-datagrid id="table" actionable></as-datagrid>
     </as-box>
     <script type="module">
       const table = document.getElementById('table');
@@ -46,6 +48,42 @@
       table.selectable = true;
       table.filterable = true;
       table.pageable = true;
+      // Crear popup menu
+      const popup = document.createElement('as-popup');
+      popup.options = 'label=Editar,value=edit;label=Duplicar,value=duplicate;label=Eliminar,value=delete';
+      document.body.appendChild(popup);
+      
+      table.addEventListener('row-action', (e) => {
+        console.log('Action on row:', e.detail);
+        const mouseEvent = e.detail.event;
+        popup.show(mouseEvent.clientX, mouseEvent.clientY);
+        
+        // Guardar referencia de la fila para usar en el evento
+        popup._currentRow = e.detail.row;
+      });
+      
+      popup.addEventListener('option-select', (e) => {
+        const action = e.detail.value;
+        const row = popup._currentRow;
+        alert(`${e.detail.label}: ${row.name}`);
+      });
+      
+      // Ejemplo de as-event con as-popup
+      const eventField = document.getElementById('eventField');
+      const eventPopup = document.createElement('as-popup');
+      eventPopup.options = 'label=Configurar,value=config;label=Exportar,value=export;label=Resetear,value=reset';
+      document.body.appendChild(eventPopup);
+      
+      eventField.addEventListener('show-menu', (e) => {
+        // Obtener posición del campo as-event
+        const rect = eventField.getBoundingClientRect();
+        eventPopup.show(rect.right, rect.bottom);
+      });
+      
+      eventPopup.addEventListener('option-select', (e) => {
+        eventField.value = e.detail.label;
+        alert(`Acción seleccionada: ${e.detail.label}`);
+      });
     </script>
   </body>
 </html>
