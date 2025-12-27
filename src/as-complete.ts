@@ -12,6 +12,10 @@ export class AsComplete extends LitElement {
     options = 'label=A,value=A;label=B,value=B;label=C,value=C'
     @property({ type: String })
     theme = ''
+    @property({ type: Boolean, reflect: true })
+    readonly = false
+    @property({ type: Boolean, reflect: true })
+    disabled = false
     @state()
     private accessor _filter = ''
     @state()
@@ -76,9 +80,9 @@ export class AsComplete extends LitElement {
         background: var(--option-hover, #f3f4f6);
       }
       :host([theme="dark"]) {
-        --label-color: #e5e5e5;
+        --label-color: #f3f4f6;
         --border-color: #525252;
-        --input-bg: #1f2937;
+        --input-bg: #374151;
         --text-color: #e5e5e5;
         --focus-color: #1676f3;
         --dropdown-bg: #262626;
@@ -97,7 +101,9 @@ export class AsComplete extends LitElement {
                 type="text"
                 .value="${this._filter}"
                 placeholder="${this.label || 'Buscar...'}"
-                @input="${(e: Event) => {
+              ?readonly=${this.readonly}
+              ?disabled=${this.disabled}
+              @input="${(e: Event) => {
                     this._filter = (e.target as HTMLInputElement).value
                     this._open = true
                 }}"

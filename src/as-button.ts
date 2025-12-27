@@ -12,11 +12,15 @@ export class AsButton extends LitElement {
   @property({ type: String })
   message = ''
 
+  @property({ type: String })
+  variant = 'primary'
+
+  @property({ type: Boolean })
+  disabled = false
+
   static styles = css`
     button {
       padding: 0.5rem 1rem;
-      background: #3b82f6;
-      color: white;
       border: none;
       border-radius: 4px;
       font-size: 0.9375rem;
@@ -25,22 +29,46 @@ export class AsButton extends LitElement {
       cursor: pointer;
       transition: background 0.15s;
     }
-    button:hover {
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .primary {
+      background: #3b82f6;
+      color: white;
+    }
+    .primary:hover:not(:disabled) {
       background: #2563eb;
     }
-    button:active {
+    .primary:active:not(:disabled) {
       background: #1d4ed8;
+    }
+    .secondary {
+      background: #e5e7eb;
+      color: #1f2937;
+    }
+    .secondary:hover:not(:disabled) {
+      background: #d1d5db;
+    }
+    .secondary:active:not(:disabled) {
+      background: #9ca3af;
     }
   `
 
   render() {
     return html`
-      <button @click=${this.onClick}>
+      <button 
+        class="${this.variant}" 
+        ?disabled="${this.disabled}"
+        @click=${this.onClick}
+      >
         ${this.label}
       </button>`
   }
 
   private onClick() {
+    if (this.disabled) return
+    
     if (!!this.link)
       location.assign(this.link)
     else if (!!this.message)
@@ -50,7 +78,6 @@ export class AsButton extends LitElement {
         bubbles: true,
         composed: true
       }))
-      console.log('as-button clicked!')
     }
   }
 

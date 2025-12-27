@@ -13,6 +13,10 @@ export class AsEvent extends LitElement {
     event = 'event-trigger'
     @property({ type: String })
     theme = ''
+    @property({ type: Boolean })
+    readonly = false
+    @property({ type: Boolean })
+    disabled = false
 
     static styles = css`
       :host {
@@ -46,8 +50,20 @@ export class AsEvent extends LitElement {
         align-items: center;
         user-select: none;
       }
+      .event-trigger .placeholder {
+        color: var(--placeholder-color, #9ca3af);
+      }
       .event-trigger:focus {
         border-color: var(--focus-color, #1676f3);
+      }
+      .event-trigger:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: var(--disabled-bg, #f3f4f6);
+      }
+      .event-trigger.readonly {
+        cursor: default;
+        background: var(--readonly-bg, #f9fafb);
       }
       .arrow {
         margin-left: 0.5rem;
@@ -63,26 +79,29 @@ export class AsEvent extends LitElement {
         color: var(--text-color, #1f2937);
       }
       :host([theme="dark"]) {
-        --label-color: #e5e5e5;
+        --label-color: #f3f4f6;
         --border-color: #525252;
-        --input-bg: #1f2937;
+        --input-bg: #374151;
         --text-color: #e5e5e5;
         --focus-color: #1676f3;
+        --placeholder-color: #6b7280;
       }
     `
   
     protected override render() {
         const displayValue = this.value || this.placeholder || ''
+        const isPlaceholder = !this.value && this.placeholder
         return html`
         <div class="field">
             ${this.label ? html`<label>${this.label}</label>` : ''}
             <div
-                class="event-trigger"
-                tabindex="0"
+                class="event-trigger ${this.readonly ? 'readonly' : ''}"
+                tabindex="${this.disabled ? '-1' : '0'}"
+                ?disabled="${this.disabled}"
                 @click="${this._handleClick}"
                 @keydown="${this._handleKeydown}"
             >
-                <span>${displayValue}</span>
+                <span class="${isPlaceholder ? 'placeholder' : ''}">${displayValue}</span>
                 <span class="arrow">
                     <svg viewBox="0 0 24 24">
                         <path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
@@ -94,6 +113,7 @@ export class AsEvent extends LitElement {
     }
 
     private _handleClick() {
+        if (this.disabled || this.readonly) return
         this.dispatchEvent(new CustomEvent(this.event, {
             detail: { value: this.value },
             bubbles: true,
@@ -102,6 +122,7 @@ export class AsEvent extends LitElement {
     }
 
     private _handleKeydown(e: KeyboardEvent) {
+        if (this.disabled || this.readonly) return
         if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault()
             this._handleClick()

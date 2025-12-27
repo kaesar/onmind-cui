@@ -13,6 +13,10 @@ export class AsInput extends LitElement {
     kind = 'text'
     @property({ type: String })
     theme = ''
+    @property({ type: Boolean, reflect: true })
+    readonly = false
+    @property({ type: Boolean, reflect: true })
+    disabled = false
 
     static styles = css`
       :host {
@@ -47,11 +51,11 @@ export class AsInput extends LitElement {
         color: var(--placeholder-color, #737373);
       }
       :host([theme="dark"]) {
-        --label-color: #e5e5e5;
+        --label-color: #f3f4f6;
         --border-color: #525252;
-        --input-bg: #1f2937;
-        --text-color: #e5e5e5;
-        --placeholder-color: #737373;
+        --input-bg: #374151;
+        --text-color: #f3f4f6;
+        --placeholder-color: #9ca3af;
         --focus-color: #1676f3;
       }
     `
@@ -65,6 +69,8 @@ export class AsInput extends LitElement {
               type="${type}"
               .value="${this.value}"
               placeholder="${this.placeholder}"
+              ?readonly=${this.readonly}
+              ?disabled=${this.disabled}
               @input="${(e: Event) => {
                 this.value = (e.target as HTMLInputElement).value
                 this.dispatchEvent(new CustomEvent('value-changed', {

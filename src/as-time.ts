@@ -11,6 +11,10 @@ export class AsTime extends LitElement {
     placeholder = this.label
     @property({ type: String })
     theme = ''
+    @property({ type: Boolean, reflect: true })
+    readonly = false
+    @property({ type: Boolean, reflect: true })
+    disabled = false
     @state()
     private accessor _open = false
     @state()
@@ -51,6 +55,9 @@ export class AsTime extends LitElement {
         justify-content: space-between;
         align-items: center;
         user-select: none;
+      }
+      .time-trigger .placeholder {
+        color: var(--placeholder-color, #9ca3af);
       }
       .time-trigger:focus {
         border-color: var(--focus-color, #1676f3);
@@ -135,29 +142,32 @@ export class AsTime extends LitElement {
         color: white;
       }
       :host([theme="dark"]) {
-        --label-color: #e5e5e5;
+        --label-color: #f3f4f6;
         --border-color: #525252;
-        --input-bg: #1f2937;
+        --input-bg: #374151;
         --text-color: #e5e5e5;
         --focus-color: #1676f3;
         --dropdown-bg: #262626;
         --option-hover: #404040;
         --option-selected: #1e3a5f;
+        --placeholder-color: #6b7280;
       }
     `
 
     protected override render() {
         const displayValue = this.value || this.placeholder || 'HH:MM'
+        const isPlaceholder = !this.value
         return html`
         <div class="field">
             ${this.label ? html`<label>${this.label}</label>` : ''}
             <div
-                class="time-trigger"
-                tabindex="0"
-                @click="${() => this._open = !this._open}"
-                @blur="${() => setTimeout(() => this._open = false, 200)}"
+              class="time-trigger"
+              tabindex="0"
+              ?aria-disabled=${this.disabled}
+              @click="${() => { if (this.disabled || this.readonly) return; this._open = !this._open }}"
+              @blur="${() => setTimeout(() => this._open = false, 200)}"
             >
-                <span>${displayValue}</span>
+                <span class="${isPlaceholder ? 'placeholder' : ''}">${displayValue}</span>
                 <span class="icon">
                     <svg viewBox="0 0 24 24">
                         <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/>
@@ -173,11 +183,12 @@ export class AsTime extends LitElement {
                                 const h = (i + 1).toString().padStart(2, '0')
                                 return html`
                                     <div
-                                        class="option ${this._hour === h ? 'selected' : ''}"
-                                        @click="${() => {
-                                            this._hour = h
-                                            this._updateValue()
-                                        }}"
+                                      class="option ${this._hour === h ? 'selected' : ''}"
+                                      @click="${() => {
+                                        if (this.readonly || this.disabled) return
+                                        this._hour = h
+                                        this._updateValue()
+                                      }}"
                                     >
                                         ${h}
                                     </div>
@@ -189,11 +200,12 @@ export class AsTime extends LitElement {
                                 const m = (i * 5).toString().padStart(2, '0')
                                 return html`
                                     <div
-                                        class="option ${this._minute === m ? 'selected' : ''}"
-                                        @click="${() => {
-                                            this._minute = m
-                                            this._updateValue()
-                                        }}"
+                                      class="option ${this._minute === m ? 'selected' : ''}"
+                                      @click="${() => {
+                                        if (this.readonly || this.disabled) return
+                                        this._minute = m
+                                        this._updateValue()
+                                      }}"
                                     >
                                         ${m}
                                     </div>
@@ -204,18 +216,20 @@ export class AsTime extends LitElement {
                             <div
                                 class="option ${this._period === 'AM' ? 'selected' : ''}"
                                 @click="${() => {
+                                    if (this.readonly || this.disabled) return
                                     this._period = 'AM'
                                     this._updateValue()
-                                }}"
+                                  }}"
                             >
                                 AM
                             </div>
                             <div
                                 class="option ${this._period === 'PM' ? 'selected' : ''}"
                                 @click="${() => {
+                                    if (this.readonly || this.disabled) return
                                     this._period = 'PM'
                                     this._updateValue()
-                                }}"
+                                  }}"
                             >
                                 PM
                             </div>

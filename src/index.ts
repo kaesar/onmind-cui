@@ -10,12 +10,16 @@ import { AsEmbed } from './as-embed'
 import { AsImage } from './as-image'
 import { AsRadio } from './as-radio'
 import { AsSelect } from './as-select'
+import { AsComplete } from './as-complete'
 import { AsText } from './as-text'
+import { AsUpload } from './as-upload'
 import { AsVideo } from './as-video'
 import { AsDatagrid } from './as-datagrid'
-import { AsComplete } from './as-complete'
 import { AsEvent } from './as-event'
 import { AsPopup } from './as-popup'
+import { AsModal } from './as-modal'
+import { AsForm } from './as-form'
+export { AsFormBuilder } from './as-form-builder'
 
 export {
     AsBox,
@@ -30,10 +34,13 @@ export {
     AsImage,
     AsRadio,
     AsSelect,
+    AsComplete,
     AsText,
+    AsUpload,
     AsVideo,
     AsDatagrid,
-    AsComplete,
     AsEvent,
-    AsPopup
+    AsPopup,
+    AsModal,
+    AsForm
 }

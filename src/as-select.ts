@@ -12,6 +12,10 @@ export class AsSelect extends LitElement {
     options = 'label=A,value=A;label=B,value=B;label=C,value=C'
     @property({ type: String })
     theme = ''
+    @property({ type: Boolean, reflect: true })
+    readonly = false
+    @property({ type: Boolean, reflect: true })
+    disabled = false
     @state()
     private accessor _open = false
     @property({ type: Array })
@@ -99,9 +103,9 @@ export class AsSelect extends LitElement {
         background: var(--option-selected, #e0f2fe);
       }
       :host([theme="dark"]) {
-        --label-color: #e5e5e5;
+        --label-color: #f3f4f6;
         --border-color: #525252;
-        --input-bg: #1f2937;
+        --input-bg: #374151;
         --text-color: #e5e5e5;
         --focus-color: #1676f3;
         --dropdown-bg: #262626;
@@ -116,10 +120,11 @@ export class AsSelect extends LitElement {
         <div class="field">
             ${this.label ? html`<label>${this.label}</label>` : ''}
             <div
-                class="select-trigger"
-                tabindex="0"
-                @click="${() => this._open = !this._open}"
-                @blur="${() => setTimeout(() => this._open = false, 200)}"
+              class="select-trigger"
+              tabindex="0"
+              ?aria-disabled=${this.disabled}
+              @click="${() => { if (this.disabled || this.readonly) return; this._open = !this._open }}"
+              @blur="${() => setTimeout(() => this._open = false, 200)}"
             >
                 <span>${selectedItem?.label || ''}</span>
                 <span class="arrow ${this._open ? 'open' : ''}">
@@ -133,15 +138,16 @@ export class AsSelect extends LitElement {
                     ${this.items.map(item => html`
                         <div
                             class="option ${this.value === item.value ? 'selected' : ''}"
-                            @click="${() => {
-                                this.value = item.value
-                                this._open = false
-                                this.dispatchEvent(new CustomEvent('value-changed', {
-                                    detail: { value: this.value },
-                                    bubbles: true,
-                                    composed: true
-                                }))
-                            }}"
+                          @click="${() => {
+                            if (this.readonly) return
+                            this.value = item.value
+                            this._open = false
+                            this.dispatchEvent(new CustomEvent('value-changed', {
+                              detail: { value: this.value },
+                              bubbles: true,
+                              composed: true
+                            }))
+                          }}"
                         >
                             ${item.label}
                         </div>

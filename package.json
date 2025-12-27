@@ -1,7 +1,7 @@
 {
   "name": "onmind-cui",
   "private": true,
-  "version": "0.1.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "start": "vite",
@@ -10,12 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "lit": "^3.3.1"
+    "lit": "^3.3.2"
   },
   "devDependencies": {
     "terser": "^5.44.1",
-    "typescript": "^5.2.2",
-    "vite": "^7.2.6",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.0",
     "vite-plugin-lib-inject-css": "^2.2.2"
   }
 }

@@ -13,6 +13,10 @@ export class AsText extends LitElement {
     rows = 3
     @property({ type: String })
     theme = ''
+    @property({ type: Boolean, reflect: true })
+    readonly = false
+    @property({ type: Boolean, reflect: true })
+    disabled = false
 
     static styles = css`
       :host {
@@ -48,9 +52,9 @@ export class AsText extends LitElement {
         color: var(--placeholder-color, #737373);
       }
       :host([theme="dark"]) {
-        --label-color: #e5e5e5;
+        --label-color: #f3f4f6;
         --border-color: #525252;
-        --input-bg: #1f2937;
+        --input-bg: #374151;
         --text-color: #e5e5e5;
         --placeholder-color: #737373;
         --focus-color: #1676f3;
@@ -62,17 +66,20 @@ export class AsText extends LitElement {
         <div class="field">
             ${this.label ? html`<label>${this.label}</label>` : ''}
             <textarea
-                rows="${this.rows}"
-                placeholder="${this.placeholder}"
-                .value="${this.value}"
-                @input="${(e: Event) => {
-                    this.value = (e.target as HTMLTextAreaElement).value
-                    this.dispatchEvent(new CustomEvent('value-changed', {
-                        detail: { value: this.value },
-                        bubbles: true,
-                        composed: true
-                    }))
-                }}"
+              rows="${this.rows}"
+              placeholder="${this.placeholder}"
+              .value="${this.value}"
+              ?readonly=${this.readonly}
+              ?disabled=${this.disabled}
+              @input="${(e: Event) => {
+                if (this.readonly) return
+                this.value = (e.target as HTMLTextAreaElement).value
+                this.dispatchEvent(new CustomEvent('value-changed', {
+                  detail: { value: this.value },
+                  bubbles: true,
+                  composed: true
+                }))
+              }}"
             ></textarea>
         </div>
         `

@@ -9,6 +9,10 @@ export class AsCheck extends LitElement {
     checked = false
     @property({ type: String })
     theme = ''
+    @property({ type: Boolean, reflect: true })
+    readonly = false
+    @property({ type: Boolean, reflect: true })
+    disabled = false
 
     static styles = css`
       :host {
@@ -58,7 +62,13 @@ export class AsCheck extends LitElement {
           <input
             type="checkbox"
             .checked="${this.checked}"
+            ?disabled=${this.disabled}
+            ?readonly=${this.readonly}
             @change="${(e: Event) => {
+              if (this.readonly) {
+                (e.target as HTMLInputElement).checked = this.checked
+                return
+              }
               this.checked = (e.target as HTMLInputElement).checked
               this.dispatchEvent(new CustomEvent('checked-changed', {
                 detail: { value: this.checked },
