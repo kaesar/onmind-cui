@@ -11,6 +11,10 @@ export class AsDate extends LitElement {
     placeholder = this.label
     @property({ type: String })
     theme = ''
+    @property({ type: Boolean, reflect: true })
+    readonly = false
+    @property({ type: Boolean, reflect: true })
+    disabled = false
     @state()
     private accessor _open = false
     @state()
@@ -140,9 +144,9 @@ export class AsDate extends LitElement {
         opacity: 0.3;
       }
       :host([theme="dark"]) {
-        --label-color: #e5e5e5;
+        --label-color: #f3f4f6;
         --border-color: #525252;
-        --input-bg: #1f2937;
+        --input-bg: #374151;
         --text-color: #e5e5e5;
         --focus-color: #1676f3;
         --dropdown-bg: #262626;
@@ -157,10 +161,11 @@ export class AsDate extends LitElement {
         <div class="field">
             ${this.label ? html`<label>${this.label}</label>` : ''}
             <div
-                class="date-trigger"
-                tabindex="0"
-                @click="${() => this._open = !this._open}"
-                @blur="${() => setTimeout(() => this._open = false, 200)}"
+              class="date-trigger"
+              tabindex="0"
+              ?aria-disabled=${this.disabled}
+              @click="${() => { if (this.disabled || this.readonly) return; this._open = !this._open }}"
+              @blur="${() => setTimeout(() => this._open = false, 200)}"
             >
                 <span>${displayValue}</span>
                 <span class="icon">
@@ -172,18 +177,18 @@ export class AsDate extends LitElement {
             ${this._open ? html`
                 <div class="dropdown" @mousedown="${(e: Event) => e.preventDefault()}">
                     <div class="header">
-                        <button @click="${() => this._changeMonth(-1)}">‹</button>
-                        <div class="month-year">${this._getMonthName()} ${this._year}</div>
-                        <button @click="${() => this._changeMonth(1)}">›</button>
-                    </div>
+                    <button @click="${() => { if (this.readonly || this.disabled) return; this._changeMonth(-1) }}">‹</button>
+                    <div class="month-year">${this._getMonthName()} ${this._year}</div>
+                    <button @click="${() => { if (this.readonly || this.disabled) return; this._changeMonth(1) }}">›</button>
+                  </div>
                     <div class="weekdays">
                         ${['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => html`<div class="weekday">${d}</div>`)}
                     </div>
                     <div class="days">
                         ${this._getDays().map(day => html`
                             <div
-                                class="day ${day.selected ? 'selected' : ''} ${day.otherMonth ? 'other-month' : ''}"
-                                @click="${() => this._selectDay(day.date)}"
+                              class="day ${day.selected ? 'selected' : ''} ${day.otherMonth ? 'other-month' : ''}"
+                              @click="${() => { if (this.readonly || this.disabled) return; this._selectDay(day.date) }}"
                             >
                                 ${day.day}
                             </div>

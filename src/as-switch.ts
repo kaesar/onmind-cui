@@ -9,6 +9,10 @@ export class AsSwitch extends LitElement {
     checked = false
     @property({ type: String })
     theme = ''
+    @property({ type: Boolean, reflect: true })
+    readonly = false
+    @property({ type: Boolean, reflect: true })
+    disabled = false
 
     static styles = css`
       :host {
@@ -57,7 +61,9 @@ export class AsSwitch extends LitElement {
         return html`
           <div
             class="switch ${this.checked ? 'checked' : ''}"
+            ?aria-disabled=${this.disabled}
             @click="${() => {
+              if (this.disabled || this.readonly) return
               this.checked = !this.checked
               this.dispatchEvent(new CustomEvent('checked-changed', {
                 detail: { value: this.checked },

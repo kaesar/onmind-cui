@@ -114,7 +114,7 @@ export class AsConfirm extends LitElement {
         this.dialogOpened = false
         if (!!this.link)
             location.assign(this.link)
-        this.dispatchEvent(new CustomEvent('confirm', {
+        this.dispatchEvent(new CustomEvent('confirm-tap', {
             bubbles: true,
             composed: true
         }))

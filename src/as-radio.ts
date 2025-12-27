@@ -71,11 +71,15 @@ export class AsRadio extends LitElement {
         background: var(--accent-color, #1676f3);
       }
       :host([theme="dark"]) {
-        --label-color: #e5e5e5;
+        --label-color: #f3f4f6;
         --text-color: #e5e5e5;
         --accent-color: #1676f3;
       }
     `
+    @property({ type: Boolean, reflect: true })
+    readonly = false
+    @property({ type: Boolean, reflect: true })
+    disabled = false
 
     protected override render() {
         return html`
@@ -85,18 +89,24 @@ export class AsRadio extends LitElement {
                 ${this.items.map(item => html`
                     <label class="option">
                         <input
-                            type="radio"
-                            name="radio-group"
-                            .value="${item.value}"
-                            ?checked="${this.value === item.value}"
-                            @change="${(e: Event) => {
-                                this.value = (e.target as HTMLInputElement).value
-                                this.dispatchEvent(new CustomEvent('value-changed', {
-                                    detail: { value: this.value },
-                                    bubbles: true,
-                                    composed: true
-                                }))
-                            }}"
+                          type="radio"
+                          name="radio-group"
+                          .value="${item.value}"
+                          ?checked="${this.value === item.value}"
+                          ?disabled=${this.disabled}
+                          ?readonly=${this.readonly}
+                          @change="${(e: Event) => {
+                            if (this.readonly) {
+                              (e.target as HTMLInputElement).checked = this.value === item.value
+                              return
+                            }
+                            this.value = (e.target as HTMLInputElement).value
+                            this.dispatchEvent(new CustomEvent('value-changed', {
+                              detail: { value: this.value },
+                              bubbles: true,
+                              composed: true
+                            }))
+                          }}"
                         />
                         ${item.label}
                     </label>

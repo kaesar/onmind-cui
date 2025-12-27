@@ -27,6 +27,7 @@
       <as-select options="label=A,value=A;label=B,value=B;label=C,value=C"></as-select>
       <as-complete label="Buscar" options="label=JavaScript,value=js;label=TypeScript,value=ts;label=Python,value=py;label=Java,value=java"></as-complete>
       <as-event id="eventField" label="Acciones" value="Seleccionar acción" event="show-menu"></as-event>
+      <as-form id="userForm"></as-form>
       <as-confirm label="Tap me" message="Hey there!"></as-confirm>
       <as-datagrid id="table" actionable></as-datagrid>
     </as-box>
@@ -83,6 +84,69 @@
       eventPopup.addEventListener('option-select', (e) => {
         eventField.value = e.detail.label;
         alert(`Acción seleccionada: ${e.detail.label}`);
+      });
+      
+      // Ejemplo de as-form
+      const userForm = document.getElementById('userForm');
+      userForm.schema = {
+        title: 'User Registration',
+        sections: [
+          {
+            title: 'Personal Information',
+            fields: [
+              {
+                name: 'firstName',
+                type: 'text',
+                label: 'First Name',
+                required: true,
+                validation: ['required', 'min:2']
+              },
+              {
+                name: 'lastName',
+                type: 'text',
+                label: 'Last Name',
+                required: true,
+                validation: ['required', 'min:2']
+              },
+              {
+                name: 'email',
+                type: 'email',
+                label: 'Email',
+                required: true,
+                validation: ['required', 'email']
+              }
+            ]
+          },
+          {
+            title: 'Preferences',
+            fields: [
+              {
+                name: 'newsletter',
+                type: 'switch',
+                label: 'Subscribe to newsletter'
+              },
+              {
+                name: 'role',
+                type: 'select',
+                label: 'Role',
+                options: [
+                  { label: 'User', value: 'user' },
+                  { label: 'Admin', value: 'admin' },
+                  { label: 'Editor', value: 'editor' }
+                ]
+              }
+            ]
+          }
+        ]
+      };
+      
+      userForm.addEventListener('form-submit', (e) => {
+        console.log('Form submitted:', e.detail.formData);
+        alert('Form submitted successfully!');
+      });
+      
+      userForm.addEventListener('form-cancel', () => {
+        alert('Form cancelled');
       });
     </script>
   </body>

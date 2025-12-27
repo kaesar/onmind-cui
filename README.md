@@ -19,14 +19,17 @@ Component | Description
 `as-date` | Date picker component
 `as-embed` | Component to Embed content for the web (url)
 `as-event` | Input with icon to trigger an event for modal or menu
+`as-form` | Schema-based form component with validation
 `as-image` | Common Image component
 `as-input` | Common Input component (text, email, password, number)
+`as-modal` | Modal dialog component with slot support
 `as-popup` | Context menu/popup component with smart positioning
 `as-radio` | Common Radio button group component
 `as-select` | Dropdown/Select component
 `as-switch` | Toggle switch component
 `as-text` | TextArea component
 `as-time` | Time picker component
+`as-upload` | File upload component with drag-and-drop support
 `as-video` | Common Video component (for YouTube links)
 
 > Tu use, you can include this `tags` in simple Markdown files or Web Apps.
