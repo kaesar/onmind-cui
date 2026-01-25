@@ -1,4 +1,4 @@
-// Componentes migrados a SolidJS
+// Solo componentes migrados a SolidJS
 import './as-button'
 import './as-input'
 import './as-box'

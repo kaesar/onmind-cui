@@ -15,7 +15,7 @@
     <script type="module" src="/src/as-select.ts"></script>
  -->  </head>
   <body>
-    <as-box>
+    <as-box theme="dark">
       <as-input label="Name" value="John"></as-input>
       <as-input label="Last Name" value="Doe"></as-input>
       <as-text label="Comments" rows="3" placeholder="Enter your comments"></as-text>
@@ -26,10 +26,13 @@
       <as-radio options="label=A,value=A;label=B,value=B;label=C,value=C"></as-radio>
       <as-select options="label=A,value=A;label=B,value=B;label=C,value=C"></as-select>
       <as-complete label="Buscar" options="label=JavaScript,value=js;label=TypeScript,value=ts;label=Python,value=py;label=Java,value=java"></as-complete>
-      <as-event id="eventField" label="Acciones" value="Seleccionar acción" event="show-menu"></as-event>
-      <as-form id="userForm"></as-form>
+      <as-event id="eventField" label="Acciones" placeholder="Select action" event="show-menu"></as-event>
       <as-confirm label="Tap me" message="Hey there!"></as-confirm>
-      <as-datagrid id="table" actionable></as-datagrid>
+      <as-modal id="testModal" title="Registro de Usuario" theme="dark">
+        <as-form id="userForm"></as-form>
+      </as-modal>
+      <as-button id="openModalBtn" label="Open Modal Form"></as-button>
+      <as-datagrid id="table" actionable theme="dark"></as-datagrid>
     </as-box>
     <script type="module">
       const table = document.getElementById('table');
@@ -86,8 +89,11 @@
         alert(`Acción seleccionada: ${e.detail.label}`);
       });
       
-      // Ejemplo de as-form
+      // Configurar formulario en modal
+      const testModal = document.getElementById('testModal');
       const userForm = document.getElementById('userForm');
+      const openModalBtn = document.getElementById('openModalBtn');
+      
       userForm.schema = {
         title: 'User Registration',
         sections: [
@@ -140,13 +146,18 @@
         ]
       };
       
+      openModalBtn.addEventListener('button-tap', () => {
+        testModal.show();
+      });
+      
       userForm.addEventListener('form-submit', (e) => {
         console.log('Form submitted:', e.detail.formData);
         alert('Form submitted successfully!');
+        testModal.hide();
       });
       
       userForm.addEventListener('form-cancel', () => {
-        alert('Form cancelled');
+        testModal.hide();
       });
     </script>
   </body>

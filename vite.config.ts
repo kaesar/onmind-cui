@@ -1,10 +1,11 @@
 import { defineConfig } from "vite";
 import { libInjectCss } from 'vite-plugin-lib-inject-css';
+import solidPlugin from 'vite-plugin-solid';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   return {
-    plugins: [ libInjectCss() ],
+    plugins: [ solidPlugin(), libInjectCss() ],
     build: {
       minify: 'terser',
       lib: {
@@ -12,7 +13,7 @@ export default defineConfig(({ command, mode }) => {
         formats: ["es"],
       },
       rollupOptions: {
-        external: mode === "production" ? "" : /^lit-element/,
+        external: mode === "production" ? "" : /^solid-js/,
         output: {
           chunkFileNames: 'chunks/[name].[hash].js',
           assetFileNames: 'cui[extname]',
