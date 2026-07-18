@@ -1,17 +1,18 @@
 import { render } from 'solid-js/web'
 import { createSignal, For } from 'solid-js'
 import { Abstract } from './Abstract'
+import { createStandardAttributes } from './attribute-observer'
 
 class AsRadio extends HTMLElement {
   private dispose?: () => void
 
   connectedCallback() {
-    const [label] = createSignal(this.getAttribute('label') || '')
+    const [label, setLabel] = createSignal(this.getAttribute('label') || '')
     const [value, setValue] = createSignal(this.getAttribute('value') || '')
-    const [options] = createSignal(this.getAttribute('options') || 'label=A,value=A;label=B,value=B;label=C,value=C')
-    const [theme] = createSignal(this.getAttribute('theme') || '')
-    const [readonly] = createSignal(this.hasAttribute('readonly'))
-    const [disabled] = createSignal(this.hasAttribute('disabled'))
+    const [options, setOptions] = createSignal(this.getAttribute('options') || 'label=A,value=A;label=B,value=B;label=C,value=C')
+    const [theme, setTheme] = createSignal(this.getAttribute('theme') || '')
+    const [readonly, setReadonly] = createSignal(this.hasAttribute('readonly'))
+    const [disabled, setDisabled] = createSignal(this.hasAttribute('disabled'))
 
     const items = () => (new Abstract()).planeDeserialize(options())
 
@@ -27,6 +28,16 @@ class AsRadio extends HTMLElement {
         composed: true
       }))
     }
+
+    // Observar cambios en atributos usando utilidad centralizada
+    createStandardAttributes(this, {
+      label: [label, setLabel],
+      value: [value, setValue],
+      options: [options, setOptions],
+      theme: [theme, setTheme],
+      readonly: { setter: setReadonly, isBoolean: true },
+      disabled: { setter: setDisabled, isBoolean: true }
+    })
 
     const Component = () => (
       <>

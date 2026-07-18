@@ -1,5 +1,5 @@
 import { render } from 'solid-js/web'
-import { createSignal, createEffect } from 'solid-js'
+import { createSignal, onCleanup } from 'solid-js'
 
 class AsVideo extends HTMLElement {
   private dispose?: () => void
@@ -9,12 +9,26 @@ class AsVideo extends HTMLElement {
     const [height, setHeight] = createSignal(parseInt(this.getAttribute('height') || '315'))
     const [url] = createSignal(this.getAttribute('url') || '')
 
-    createEffect(() => {
+    // Reactive responsive: recalcula en resize de ventana
+    const handleResize = () => {
       if (window.innerWidth < 560) {
         setWidth(310)
         setHeight(175)
+      } else {
+        setWidth(parseInt(this.getAttribute('width') || '560'))
+        setHeight(parseInt(this.getAttribute('height') || '315'))
       }
+    }
+
+    window.addEventListener('resize', handleResize)
+    onCleanup(() => window.removeEventListener('resize', handleResize))
+
+    // Reactive a cambios de atributo (como hacía Lit en updated())
+    const observer = new MutationObserver(() => {
+      handleResize()
     })
+    observer.observe(this, { attributes: true, attributeFilter: ['width', 'height'] })
+    onCleanup(() => observer.disconnect())
 
     const Component = () => (
       <>

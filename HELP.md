@@ -439,3 +439,32 @@ popup.addEventListener('option-select', (e) => {
 - Escucha eventos CustomEvent para interacción (ej. `row-select`, `row-action`).
 - Las etiquetas son siempre en minúscula y se cierran como cualquier elemento HTML: <as-name></as-name>
 - `as-popup` se posiciona automáticamente y detecta opciones de peligro por palabras clave en el valor
+
+---
+
+## Extender el Sistema (Crear Nuevos Componentes)
+
+Si necesitas agregar nuevos componentes al sistema CUI, consulta **DESIGN.md** que contiene la guía completa para desarrolladores, incluyendo:
+
+- **Patrón base** de componentes con SolidJS + Shadow DOM
+- **Utilidad centralizada** `attribute-observer.ts` para sincronizar atributos ↔ signals
+- **Checklist obligatorio** para nuevos componentes:
+  - `src/as-new-component.tsx` - Implementación
+  - `src/index-solid.ts` - Exportación
+  - `src/vite-env.d.ts` - Tipos JSX IntrinsicElements
+  - `src/custom-elements.d.ts` - Tipos TypeScript completos
+  - `index.html` - Demo
+  - `README.md` - Tabla de componentes
+
+**Referencia rápida - Archivos a modificar:**
+
+| Archivo | Qué agregar |
+|---------|-------------|
+| `src/as-new-component.tsx` | Clase del componente con `createStandardAttributes` |
+| `src/index-solid.ts` | `import './as-new-component'` |
+| `src/vite-env.d.ts` | `'as-new-component': { prop?: string }` en `JSX.IntrinsicElements` |
+| `src/custom-elements.d.ts` | Tipos completos con eventos en `JSX.IntrinsicElements` |
+| `index.html` | Ejemplo de uso |
+| `README.md` | Fila en la tabla de componentes |
+
+Ver **DESIGN.md** sección "Extending the Design System" para la guía completa y patrón de código base.

@@ -1,15 +1,16 @@
 import { render } from 'solid-js/web'
 import { createSignal } from 'solid-js'
+import { createStandardAttributes } from './attribute-observer'
 
 class AsButton extends HTMLElement {
   private dispose?: () => void
 
   connectedCallback() {
-    const [label] = createSignal(this.getAttribute('label') || 'Oops!')
-    const [link] = createSignal(this.getAttribute('link') || '')
-    const [message] = createSignal(this.getAttribute('message') || '')
-    const [variant] = createSignal(this.getAttribute('variant') || 'primary')
-    const [disabled] = createSignal(this.hasAttribute('disabled'))
+    const [label, setLabel] = createSignal(this.getAttribute('label') || 'Oops!')
+    const [link, setLink] = createSignal(this.getAttribute('link') || '')
+    const [message, setMessage] = createSignal(this.getAttribute('message') || '')
+    const [variant, setVariant] = createSignal(this.getAttribute('variant') || 'primary')
+    const [disabled, setDisabled] = createSignal(this.hasAttribute('disabled'))
 
     const onClick = () => {
       if (disabled()) return
@@ -33,6 +34,15 @@ class AsButton extends HTMLElement {
       document.body.appendChild(notification)
       setTimeout(() => notification.remove(), 3500)
     }
+
+    // Observar cambios en atributos usando utilidad centralizada
+    createStandardAttributes(this, {
+      label: [label, setLabel],
+      link: [link, setLink],
+      message: [message, setMessage],
+      variant: [variant, setVariant],
+      disabled: { setter: setDisabled, isBoolean: true }
+    })
 
     const Component = () => (
       <>

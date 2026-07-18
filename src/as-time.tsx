@@ -1,16 +1,17 @@
 import { render } from 'solid-js/web'
 import { createSignal, For } from 'solid-js'
+import { createStandardAttributes } from './attribute-observer'
 
 class AsTime extends HTMLElement {
   private dispose?: () => void
 
   connectedCallback() {
-    const [label] = createSignal(this.getAttribute('label') || '')
+    const [label, setLabel] = createSignal(this.getAttribute('label') || '')
     const [value, setValue] = createSignal(this.getAttribute('value') || '')
-    const [placeholder] = createSignal(this.getAttribute('placeholder') || this.getAttribute('label') || '')
-    const [theme] = createSignal(this.getAttribute('theme') || '')
-    const [readonly] = createSignal(this.hasAttribute('readonly'))
-    const [disabled] = createSignal(this.hasAttribute('disabled'))
+    const [placeholder, setPlaceholder] = createSignal(this.getAttribute('placeholder') || this.getAttribute('label') || '')
+    const [theme, setTheme] = createSignal(this.getAttribute('theme') || '')
+    const [readonly, setReadonly] = createSignal(this.hasAttribute('readonly'))
+    const [disabled, setDisabled] = createSignal(this.hasAttribute('disabled'))
     const [open, setOpen] = createSignal(false)
     const [hour, setHour] = createSignal('12')
     const [minute, setMinute] = createSignal('00')
@@ -38,20 +39,33 @@ class AsTime extends HTMLElement {
 
     const isPlaceholder = () => !value()
 
+    // Observar cambios en atributos usando utilidad centralizada
+    createStandardAttributes(this, {
+      label: [label, setLabel],
+      value: [value, setValue],
+      placeholder: [placeholder, setPlaceholder],
+      theme: [theme, setTheme],
+      readonly: { setter: setReadonly, isBoolean: true },
+      disabled: { setter: setDisabled, isBoolean: true }
+    })
+
     const Component = () => (
       <>
         <style>{`
+          :host {
+            display: block;
+            font-family: -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", Helvetica, Arial, sans-serif;
+            position: relative;
+          }
           .field {
             display: flex;
             flex-direction: column;
             gap: 0.25rem;
-            font-family: -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", Helvetica, Arial, sans-serif;
-            position: relative;
           }
           label {
             font-size: 0.875rem;
             font-weight: 500;
-            color: ${theme() === 'dark' ? '#f3f4f6' : '#374151'};
+            color: #374151;
           }
           .time-trigger {
             padding: 0.5rem 0.75rem;
@@ -59,8 +73,8 @@ class AsTime extends HTMLElement {
             border-radius: 4px;
             font-size: 0.9375rem;
             font-family: inherit;
-            background: ${theme() === 'dark' ? '#374151' : '#e8eaed'};
-            color: ${theme() === 'dark' ? '#e5e5e5' : '#1a1a1a'};
+            background: #e8eaed;
+            color: #1a1a1a;
             outline: none;
             cursor: pointer;
             transition: border-color 0.15s;
@@ -70,7 +84,7 @@ class AsTime extends HTMLElement {
             user-select: none;
           }
           .time-trigger.placeholder {
-            color: ${theme() === 'dark' ? '#9ca3af' : '#6b7280'};
+            color: #6b7280;
           }
           .time-trigger:focus {
             border-color: #1676f3;
@@ -82,18 +96,20 @@ class AsTime extends HTMLElement {
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
           }
-          svg {
+          .icon svg {
             width: 18px;
             height: 18px;
-            fill: ${theme() === 'dark' ? '#e5e5e5' : '#1f2937'};
+            fill: #1f2937;
+            color: #1f2937;
           }
           .dropdown {
             position: absolute;
             top: 100%;
             left: 0;
-            background: ${theme() === 'dark' ? '#262626' : 'white'};
-            border: 1px solid ${theme() === 'dark' ? '#525252' : '#d1d5db'};
+            background: white;
+            border: 1px solid #d1d5db;
             border-radius: 4px;
             margin-top: 0.25rem;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -106,8 +122,8 @@ class AsTime extends HTMLElement {
             font-size: 2.5rem;
             font-weight: 300;
             padding: 1.5rem 1rem 1rem 1rem;
-            color: ${theme() === 'dark' ? '#e5e5e5' : '#1f2937'};
-            border-bottom: 1px solid ${theme() === 'dark' ? '#525252' : '#d1d5db'};
+            color: #1f2937;
+            border-bottom: 1px solid #d1d5db;
           }
           .selectors {
             display: flex;
@@ -117,7 +133,7 @@ class AsTime extends HTMLElement {
             flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
-            border-right: 1px solid ${theme() === 'dark' ? '#525252' : '#d1d5db'};
+            border-right: 1px solid #d1d5db;
           }
           .column:last-child {
             border-right: none;
@@ -131,15 +147,15 @@ class AsTime extends HTMLElement {
             padding: 0.75rem;
             cursor: pointer;
             font-size: 0.9375rem;
-            color: ${theme() === 'dark' ? '#e5e5e5' : '#1f2937'};
+            color: #1f2937;
             text-align: center;
             border-bottom: 1px solid transparent;
           }
           .option:hover {
-            background: ${theme() === 'dark' ? '#404040' : '#f3f4f6'};
+            background: #f3f4f6;
           }
           .option.selected {
-            background: ${theme() === 'dark' ? '#1e3a5f' : '#e3f2fd'};
+            background: #e3f2fd;
             color: #1676f3;
             font-weight: 600;
           }
@@ -153,6 +169,29 @@ class AsTime extends HTMLElement {
           .period-column .option.selected {
             background: #1676f3;
             color: white;
+          }
+          :host([theme="dark"]) label {
+            color: #f3f4f6;
+          }
+          :host([theme="dark"]) .dropdown {
+            background: #262626;
+            border-color: #525252;
+          }
+          :host([theme="dark"]) .time-display {
+            color: #e5e5e5;
+            border-bottom-color: #525252;
+          }
+          :host([theme="dark"]) .column {
+            border-right-color: #525252;
+          }
+          :host([theme="dark"]) .option {
+            color: #e5e5e5;
+          }
+          :host([theme="dark"]) .option:hover {
+            background: #404040;
+          }
+          :host([theme="dark"]) .option.selected {
+            background: #1e3a5f;
           }
         `}</style>
         <div class="field">

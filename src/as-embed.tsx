@@ -1,13 +1,27 @@
 import { render } from 'solid-js/web'
-import { createSignal } from 'solid-js'
+import { createSignal, onCleanup } from 'solid-js'
 
 class AsEmbed extends HTMLElement {
   private dispose?: () => void
 
   connectedCallback() {
-    const [width] = createSignal(parseInt(this.getAttribute('width') || '1200'))
-    const [height] = createSignal(parseInt(this.getAttribute('height') || '675'))
-    const [url] = createSignal(this.getAttribute('url') || '')
+    const [width, setWidth] = createSignal(parseInt(this.getAttribute('width') || '1200'))
+    const [height, setHeight] = createSignal(parseInt(this.getAttribute('height') || '675'))
+    const [url, setUrl] = createSignal(this.getAttribute('url') || '')
+
+    // Observar cambios en atributos
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes') {
+          const attrName = mutation.attributeName
+          if (attrName === 'width') setWidth(parseInt(this.getAttribute('width') || '1200'))
+          if (attrName === 'height') setHeight(parseInt(this.getAttribute('height') || '675'))
+          if (attrName === 'url') setUrl(this.getAttribute('url') || '')
+        }
+      })
+    })
+    observer.observe(this, { attributes: true })
+    onCleanup(() => observer.disconnect())
 
     const Component = () => (
       <>

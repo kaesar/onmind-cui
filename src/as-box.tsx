@@ -1,12 +1,13 @@
 import { render } from 'solid-js/web'
 import { createSignal } from 'solid-js'
+import { createStandardAttributes } from './attribute-observer'
 
 class AsBox extends HTMLElement {
   private dispose?: () => void
 
   connectedCallback() {
-    const [dim] = createSignal(this.getAttribute('dim') || 'false')
-    const [theme] = createSignal(this.getAttribute('theme') || 'light')
+    const [dim, setDim] = createSignal(this.getAttribute('dim') || 'false')
+    const [theme, setTheme] = createSignal(this.getAttribute('theme') || 'light')
 
     const handleSlotChange = (e: Event) => {
       const slot = e.target as HTMLSlotElement
@@ -17,6 +18,12 @@ class AsBox extends HTMLElement {
         }
       })
     }
+
+    // Observar cambios en atributos usando utilidad centralizada
+    createStandardAttributes(this, {
+      dim: [dim, setDim],
+      theme: [theme, setTheme]
+    })
 
     const getStyles = () => {
       const isDim = dim() === 'true'

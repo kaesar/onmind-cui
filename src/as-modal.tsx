@@ -5,9 +5,9 @@ class AsModal extends HTMLElement {
   private dispose?: () => void
 
   connectedCallback() {
-    const [title] = createSignal(this.getAttribute('title') || '')
+    const [title, setTitle] = createSignal(this.getAttribute('title') || '')
     const [open, setOpen] = createSignal(false)
-    const [theme] = createSignal(this.getAttribute('theme') || '')
+    const [theme, setTheme] = createSignal(this.getAttribute('theme') || '')
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && open()) {
@@ -37,6 +37,19 @@ class AsModal extends HTMLElement {
         }
       })
     }
+
+    // Observar cambios en atributos
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes') {
+          const attrName = mutation.attributeName
+          if (attrName === 'title') setTitle(this.getAttribute('title') || '')
+          if (attrName === 'theme') setTheme(this.getAttribute('theme') || '')
+        }
+      })
+    })
+    observer.observe(this, { attributes: true })
+    onCleanup(() => observer.disconnect())
 
     const show = () => {
       setOpen(true)

@@ -1,13 +1,13 @@
 import { render } from 'solid-js/web'
-import { createSignal } from 'solid-js'
+import { createSignal, onCleanup } from 'solid-js'
 
 class AsConfirm extends HTMLElement {
   private dispose?: () => void
 
   connectedCallback() {
-    const [label] = createSignal(this.getAttribute('label') || 'Oops!')
-    const [link] = createSignal(this.getAttribute('link') || '')
-    const [message] = createSignal(this.getAttribute('message') || '')
+    const [label, setLabel] = createSignal(this.getAttribute('label') || 'Oops!')
+    const [link, setLink] = createSignal(this.getAttribute('link') || '')
+    const [message, setMessage] = createSignal(this.getAttribute('message') || '')
     const [dialogOpened, setDialogOpened] = createSignal(false)
 
     const open = () => setDialogOpened(true)
@@ -24,6 +24,20 @@ class AsConfirm extends HTMLElement {
         composed: true
       }))
     }
+
+    // Observar cambios en atributos
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes') {
+          const attrName = mutation.attributeName
+          if (attrName === 'label') setLabel(this.getAttribute('label') || 'Oops!')
+          if (attrName === 'link') setLink(this.getAttribute('link') || '')
+          if (attrName === 'message') setMessage(this.getAttribute('message') || '')
+        }
+      })
+    })
+    observer.observe(this, { attributes: true })
+    onCleanup(() => observer.disconnect())
 
     const Component = () => (
       <>

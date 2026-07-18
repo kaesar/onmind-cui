@@ -1,16 +1,17 @@
 import { render } from 'solid-js/web'
 import { createSignal } from 'solid-js'
+import { createStandardAttributes } from './attribute-observer'
 
 class AsUpload extends HTMLElement {
   private dispose?: () => void
   private fileInputRef?: HTMLInputElement
 
   connectedCallback() {
-    const [label] = createSignal(this.getAttribute('label') || 'Upload files')
-    const [accept] = createSignal(this.getAttribute('accept') || '*')
-    const [multiple] = createSignal(this.hasAttribute('multiple'))
-    const [theme] = createSignal(this.getAttribute('theme') || '')
-    const [disabled] = createSignal(this.hasAttribute('disabled'))
+    const [label, setLabel] = createSignal(this.getAttribute('label') || 'Upload files')
+    const [accept, setAccept] = createSignal(this.getAttribute('accept') || '*')
+    const [multiple, setMultiple] = createSignal(this.hasAttribute('multiple'))
+    const [theme, setTheme] = createSignal(this.getAttribute('theme') || '')
+    const [disabled, setDisabled] = createSignal(this.hasAttribute('disabled'))
     const [dragOver, setDragOver] = createSignal(false)
 
     const handleClick = () => {
@@ -53,6 +54,15 @@ class AsUpload extends HTMLElement {
         }))
       }
     }
+
+    // Observar cambios en atributos usando utilidad centralizada
+    createStandardAttributes(this, {
+      label: [label, setLabel],
+      accept: [accept, setAccept],
+      multiple: { setter: setMultiple, isBoolean: true },
+      theme: [theme, setTheme],
+      disabled: { setter: setDisabled, isBoolean: true }
+    })
 
     const Component = () => (
       <>

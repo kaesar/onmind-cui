@@ -78,6 +78,9 @@ class AsInput extends HTMLElement {
           input::placeholder {
             color: #737373;
           }
+          :host([theme="dark"]) label {
+            color: #f3f4f6;
+          }
         `}</style>
         <div class="field">
           {label() && <label>{label()}</label>}

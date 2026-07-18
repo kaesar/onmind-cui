@@ -1,16 +1,17 @@
 import { render } from 'solid-js/web'
 import { createSignal, For } from 'solid-js'
+import { createStandardAttributes } from './attribute-observer'
 
 class AsDate extends HTMLElement {
   private dispose?: () => void
 
   connectedCallback() {
-    const [label] = createSignal(this.getAttribute('label') || '')
+    const [label, setLabel] = createSignal(this.getAttribute('label') || '')
     const [value, setValue] = createSignal(this.getAttribute('value') || '')
-    const [placeholder] = createSignal(this.getAttribute('placeholder') || this.getAttribute('label') || '')
-    const [theme] = createSignal(this.getAttribute('theme') || '')
-    const [readonly] = createSignal(this.hasAttribute('readonly'))
-    const [disabled] = createSignal(this.hasAttribute('disabled'))
+    const [placeholder, setPlaceholder] = createSignal(this.getAttribute('placeholder') || this.getAttribute('label') || '')
+    const [theme, setTheme] = createSignal(this.getAttribute('theme') || '')
+    const [readonly, setReadonly] = createSignal(this.hasAttribute('readonly'))
+    const [disabled, setDisabled] = createSignal(this.hasAttribute('disabled'))
     const [open, setOpen] = createSignal(false)
     const [year, setYear] = createSignal(new Date().getFullYear())
     const [month, setMonth] = createSignal(new Date().getMonth())
@@ -31,6 +32,16 @@ class AsDate extends HTMLElement {
         setMonth(newMonth)
       }
     }
+
+    // Observar cambios en atributos usando utilidad centralizada
+    createStandardAttributes(this, {
+      label: [label, setLabel],
+      value: [value, setValue],
+      placeholder: [placeholder, setPlaceholder],
+      theme: [theme, setTheme],
+      readonly: { setter: setReadonly, isBoolean: true },
+      disabled: { setter: setDisabled, isBoolean: true }
+    })
 
     const getDays = () => {
       const firstDay = new Date(year(), month(), 1).getDay()
@@ -78,17 +89,20 @@ class AsDate extends HTMLElement {
     const Component = () => (
       <>
         <style>{`
+          :host {
+            display: block;
+            font-family: -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", Helvetica, Arial, sans-serif;
+            position: relative;
+          }
           .field {
             display: flex;
             flex-direction: column;
             gap: 0.25rem;
-            font-family: -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", Helvetica, Arial, sans-serif;
-            position: relative;
           }
           label {
             font-size: 0.875rem;
             font-weight: 500;
-            color: ${theme() === 'dark' ? '#f3f4f6' : '#374151'};
+            color: #374151;
           }
           .date-trigger {
             padding: 0.5rem 0.75rem;
@@ -96,8 +110,8 @@ class AsDate extends HTMLElement {
             border-radius: 4px;
             font-size: 0.9375rem;
             font-family: inherit;
-            background: ${theme() === 'dark' ? '#374151' : '#e8eaed'};
-            color: ${theme() === 'dark' ? '#e5e5e5' : '#1a1a1a'};
+            background: #e8eaed;
+            color: #1a1a1a;
             outline: none;
             cursor: pointer;
             transition: border-color 0.15s;
@@ -107,7 +121,7 @@ class AsDate extends HTMLElement {
             user-select: none;
           }
           .date-trigger.placeholder {
-            color: ${theme() === 'dark' ? '#9ca3af' : '#6b7280'};
+            color: #6b7280;
           }
           .date-trigger:focus {
             border-color: #1676f3;
@@ -119,18 +133,20 @@ class AsDate extends HTMLElement {
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
           }
-          svg {
+          .icon svg {
             width: 18px;
             height: 18px;
-            fill: ${theme() === 'dark' ? '#e5e5e5' : '#1f2937'};
+            fill: #1f2937;
+            color: #1f2937;
           }
           .dropdown {
             position: absolute;
             top: 100%;
             left: 0;
-            background: ${theme() === 'dark' ? '#262626' : 'white'};
-            border: 1px solid ${theme() === 'dark' ? '#525252' : '#d1d5db'};
+            background: white;
+            border: 1px solid #d1d5db;
             border-radius: 4px;
             margin-top: 0.25rem;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -150,16 +166,17 @@ class AsDate extends HTMLElement {
             border: none;
             cursor: pointer;
             padding: 0.25rem 0.5rem;
-            color: ${theme() === 'dark' ? '#e5e5e5' : '#1f2937'};
+            color: #1f2937;
             font-size: 1.125rem;
             border-radius: 4px;
           }
           .header button:hover {
-            background: ${theme() === 'dark' ? '#404040' : '#f3f4f6'};
+            background: #f3f4f6;
           }
           .month-year {
             font-weight: 500;
             font-size: 0.9375rem;
+            color: #1f2937;
           }
           .weekdays {
             display: grid;
@@ -173,6 +190,7 @@ class AsDate extends HTMLElement {
             font-weight: 500;
             padding: 0.25rem;
             opacity: 0.6;
+            color: #1f2937;
           }
           .days {
             display: grid;
@@ -185,10 +203,10 @@ class AsDate extends HTMLElement {
             cursor: pointer;
             border-radius: 4px;
             font-size: 0.875rem;
-            color: ${theme() === 'dark' ? '#e5e5e5' : '#1f2937'};
+            color: #1f2937;
           }
           .day:hover {
-            background: ${theme() === 'dark' ? '#404040' : '#f3f4f6'};
+            background: #f3f4f6;
           }
           .day.selected {
             background: #1676f3;
@@ -196,6 +214,31 @@ class AsDate extends HTMLElement {
           }
           .day.other-month {
             opacity: 0.3;
+          }
+          :host([theme="dark"]) label {
+            color: #f3f4f6;
+          }
+          :host([theme="dark"]) .dropdown {
+            background: #262626;
+            border-color: #525252;
+          }
+          :host([theme="dark"]) .header button {
+            color: #e5e5e5;
+          }
+          :host([theme="dark"]) .header button:hover {
+            background: #404040;
+          }
+          :host([theme="dark"]) .month-year {
+            color: #e5e5e5;
+          }
+          :host([theme="dark"]) .weekday {
+            color: #e5e5e5;
+          }
+          :host([theme="dark"]) .day {
+            color: #e5e5e5;
+          }
+          :host([theme="dark"]) .day:hover {
+            background: #404040;
           }
         `}</style>
         <div class="field">

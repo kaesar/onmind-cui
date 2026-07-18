@@ -1,11 +1,17 @@
 import { render } from 'solid-js/web'
 import { createSignal } from 'solid-js'
+import { createStandardAttributes } from './attribute-observer'
 
 class AsImage extends HTMLElement {
   private dispose?: () => void
 
   connectedCallback() {
-    const [url] = createSignal(this.getAttribute('url') || '')
+    const [url, setUrl] = createSignal(this.getAttribute('url') || '')
+
+    // Observar cambios en atributos usando utilidad centralizada
+    createStandardAttributes(this, {
+      url: [url, setUrl]
+    })
 
     const Component = () => (
       <>

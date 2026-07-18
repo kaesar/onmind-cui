@@ -1,15 +1,16 @@
 import { render } from 'solid-js/web'
 import { createSignal } from 'solid-js'
+import { createStandardAttributes } from './attribute-observer'
 
 class AsCheck extends HTMLElement {
   private dispose?: () => void
 
   connectedCallback() {
-    const [label] = createSignal(this.getAttribute('label') || '')
+    const [label, setLabel] = createSignal(this.getAttribute('label') || '')
     const [checked, setChecked] = createSignal(this.hasAttribute('checked'))
-    const [theme] = createSignal(this.getAttribute('theme') || '')
-    const [readonly] = createSignal(this.hasAttribute('readonly'))
-    const [disabled] = createSignal(this.hasAttribute('disabled'))
+    const [theme, setTheme] = createSignal(this.getAttribute('theme') || '')
+    const [readonly, setReadonly] = createSignal(this.hasAttribute('readonly'))
+    const [disabled, setDisabled] = createSignal(this.hasAttribute('disabled'))
 
     const onChange = (e: Event) => {
       if (readonly()) {
@@ -24,6 +25,15 @@ class AsCheck extends HTMLElement {
         composed: true
       }))
     }
+
+    // Observar cambios en atributos usando utilidad centralizada
+    createStandardAttributes(this, {
+      label: [label, setLabel],
+      checked: { setter: setChecked, isBoolean: true },
+      theme: [theme, setTheme],
+      readonly: { setter: setReadonly, isBoolean: true },
+      disabled: { setter: setDisabled, isBoolean: true }
+    })
 
     const Component = () => (
       <>

@@ -9,7 +9,7 @@ class AsPopup extends HTMLElement {
 
   connectedCallback() {
     const [options, setOptions] = createSignal(this._options)
-    const [theme] = createSignal(this.getAttribute('theme') || '')
+    const [theme, setTheme] = createSignal(this.getAttribute('theme') || '')
     const [open, setOpen] = createSignal(false)
     const [x, setX] = createSignal(0)
     const [y, setY] = createSignal(0)
@@ -20,6 +20,18 @@ class AsPopup extends HTMLElement {
     let modalElement: HTMLElement | null = null
 
     const items = () => (new Abstract()).planeDeserialize(options())
+
+    // Observar cambios en atributos
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes') {
+          const attrName = mutation.attributeName
+          if (attrName === 'theme') setTheme(this.getAttribute('theme') || '')
+        }
+      })
+    })
+    observer.observe(this, { attributes: true })
+    onCleanup(() => observer.disconnect())
 
     const show = (xPos: number, yPos: number) => {
       // Calcular posición inteligente

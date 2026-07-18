@@ -8,7 +8,7 @@ class AsForm extends HTMLElement {
 
   connectedCallback() {
     const [schema, setSchema] = createSignal(this._schema)
-    const [theme] = createSignal(this.getAttribute('theme') || '')
+    const [theme] = createSignal((this.getAttribute('theme') as 'light' | 'dark') || undefined)
     const [successMessage] = createSignal(this.getAttribute('successMessage') || '')
     const [hideTitle, setHideTitle] = createSignal(this._hideTitle || this.hasAttribute('hideTitle'))
     const [formData, setFormData] = createSignal<any>({})
@@ -32,14 +32,43 @@ class AsForm extends HTMLElement {
     }
 
     const handleSubmit = () => {
-      if (successMessage()) {
-        showNotification(successMessage())
+      // Validate all fields with validation rules
+      const schemaData = schema()
+      let hasErrors = false
+      const newErrors: any = {}
+      
+      const allFields = [
+        ...(schemaData.fields || []),
+        ...(schemaData.sections?.flatMap((s: any) => s.fields) || [])
+      ]
+      
+      allFields.forEach(field => {
+        if (field.validation) {
+          const value = formData()[field.name] || field.value || ''
+          const result = validateField(value, field.validation)
+          if (!result.valid) {
+            newErrors[field.name] = result.message
+            hasErrors = true
+          }
+        }
+      })
+      
+      setErrors(newErrors)
+      
+      if (!hasErrors) {
+        if (successMessage()) {
+          showNotification(successMessage())
+        }
+        this.dispatchEvent(new CustomEvent('form-submit', {
+          detail: { formData: formData() },
+          bubbles: true,
+          composed: true
+        }))
+      } else {
+        if (this.getAttribute('errorMessage')) {
+          showNotification(this.getAttribute('errorMessage')!, 'error')
+        }
       }
-      this.dispatchEvent(new CustomEvent('form-submit', {
-        detail: { formData: formData() },
-        bubbles: true,
-        composed: true
-      }))
     }
 
     const handleCancel = () => {
@@ -68,41 +97,178 @@ class AsForm extends HTMLElement {
       setTimeout(() => notification.remove(), 3500)
     }
 
+    // Validation function (duplicated from AsFormBuilder for standalone use)
+    const validateField = (value: any, rules: string[]) => {
+      const validators: Record<string, { validate: (v: any, p: string) => boolean; message: (p: string) => string }> = {
+        required: { validate: (v) => v && v.toString().trim().length > 0, message: () => 'This field is required' },
+        email: { validate: (v) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), message: () => 'Please enter a valid email address' },
+        min: { validate: (v, p) => !v || v.toString().length >= parseInt(p), message: (p) => `Minimum ${p} characters required` },
+        max: { validate: (v, p) => !v || v.toString().length <= parseInt(p), message: (p) => `Maximum ${p} characters allowed` },
+        number: { validate: (v) => !v || !isNaN(Number(v)), message: () => 'Please enter a valid number' },
+        positive: { validate: (v) => !v || Number(v) > 0, message: () => 'Please enter a positive number' },
+        url: { validate: (v) => !v || /^https?:\/\/.+/.test(v), message: () => 'Please enter a valid URL' },
+        pattern: { validate: (v, p) => !v || new RegExp(p).test(v), message: (p) => `Value must match pattern: ${p}` },
+        enum: { validate: (v, p) => !v || p.split(',').includes(v), message: (p) => `Value must be one of: ${p.replace(/,/g, ', ')}` },
+        password: { validate: (v) => !v || /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(v), message: () => 'Password must be at least 8 characters with uppercase, lowercase and number' }
+      }
+
+      for (const rule of rules) {
+        const [ruleName, ruleParam] = rule.split(':')
+        const validator = validators[ruleName]
+        
+        if (validator && !validator.validate(value, ruleParam)) {
+          return { valid: false, message: validator.message(ruleParam) }
+        }
+      }
+      
+      return { valid: true }
+    }
+
     const renderField = (field: any) => {
       const value = formData()[field.name] || field.value || ''
-      const error = errors()[field.name]
-      
-      return (
-        <div>
-          <label style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem; display: block;">
-            {field.label}
-          </label>
-          <input
-            type={field.type || 'text'}
-            value={value}
-            placeholder={field.placeholder || ''}
-            disabled={field.disabled}
-            readonly={field.readonly}
-            style={`
-              padding: 0.5rem 0.75rem;
-              border: 1px solid transparent;
-              border-radius: 4px;
-              font-size: 0.9375rem;
-              background: ${theme() === 'dark' ? '#374151' : '#e8eaed'};
-              color: ${theme() === 'dark' ? '#e5e5e5' : '#1a1a1a'};
-              outline: none;
-              width: 100%;
-              box-sizing: border-box;
-            `}
-            onInput={(e) => handleFieldChange(field.name, e.target.value)}
-          />
-          {error && (
-            <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">
-              {error}
-            </div>
-          )}
-        </div>
-      )
+      const fieldTheme = (theme() === 'dark' ? 'dark' : 'light') as 'light' | 'dark'
+      const fieldDisabled = field.disabled || false
+      const fieldReadonly = field.readonly || false
+      const fieldRequired = field.required || false
+
+      // Common props for all field components
+      const commonProps = {
+        label: field.label || field.name,
+        value: value,
+        placeholder: field.placeholder || '',
+        theme: fieldTheme,
+        disabled: fieldDisabled,
+        readonly: fieldReadonly,
+        // Event handler to sync formData and clear errors
+        onValueChanged: (e: CustomEvent) => handleFieldChange(field.name, e.detail.value)
+      }
+
+      switch (field.type) {
+        case 'text':
+        case 'email':
+        case 'password':
+        case 'number':
+          return (
+            <as-input
+              {...commonProps}
+              kind={field.type}
+              required={fieldRequired}
+            />
+          )
+
+        case 'textarea':
+          return (
+            <as-text
+              {...commonProps}
+              rows={field.rows || 3}
+              required={fieldRequired}
+            />
+          )
+
+        case 'select':
+          return (
+            <as-select
+              {...commonProps}
+              options={formatOptions(field.options)}
+              required={fieldRequired}
+            />
+          )
+
+        case 'complete':
+          return (
+            <as-complete
+              {...commonProps}
+              options={formatOptions(field.options)}
+              required={fieldRequired}
+            />
+          )
+
+        case 'date':
+          return (
+            <as-date
+              {...commonProps}
+              required={fieldRequired}
+            />
+          )
+
+        case 'time':
+          return (
+            <as-time
+              {...commonProps}
+              required={fieldRequired}
+            />
+          )
+
+        case 'checkbox':
+          return (
+            <as-check
+              label={field.label || field.name}
+              checked={Boolean(value)}
+              theme={fieldTheme}
+              disabled={fieldDisabled}
+              readonly={fieldReadonly}
+              onCheckedChanged={(e: CustomEvent) => handleFieldChange(field.name, e.detail.value)}
+              required={fieldRequired}
+            />
+          )
+
+        case 'switch':
+          return (
+            <as-switch
+              label={field.label || field.name}
+              checked={Boolean(value)}
+              theme={fieldTheme}
+              disabled={fieldDisabled}
+              readonly={fieldReadonly}
+              onCheckedChanged={(e: CustomEvent) => handleFieldChange(field.name, e.detail.value)}
+              required={fieldRequired}
+            />
+          )
+
+        case 'radio':
+          return (
+            <as-radio
+              label={field.label || field.name}
+              value={value}
+              options={formatOptions(field.options)}
+              theme={fieldTheme}
+              disabled={fieldDisabled}
+              readonly={fieldReadonly}
+              onValueChanged={(e: CustomEvent) => handleFieldChange(field.name, e.detail.value)}
+              required={fieldRequired}
+            />
+          )
+
+        case 'upload':
+          return (
+            <as-upload
+              label={field.label || field.name}
+              accept={field.accept || '*'}
+              multiple={field.multiple || false}
+              theme={fieldTheme}
+              disabled={fieldDisabled}
+              onFilesSelected={(e: CustomEvent) => handleFieldChange(field.name, e.detail.files)}
+              required={fieldRequired}
+            />
+          )
+
+        default:
+          return (
+            <as-input
+              {...commonProps}
+              kind="text"
+              required={fieldRequired}
+            />
+          )
+      }
+    }
+
+    const formatOptions = (options: any) => {
+      if (!options) return ''
+      if (Array.isArray(options)) {
+        return options.map(opt => `label=${opt.label},value=${opt.value}`).join(';')
+      }
+      return options
     }
 
     onMount(() => {
