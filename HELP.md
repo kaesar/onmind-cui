@@ -1,6 +1,6 @@
 # Guía de Componentes OnMind-CUI
 
-Conjunto selecto de componentes web como Web Components (custom elements) basados en **Lit** e inspirados en **VaadinUI**, orientados al uso común en formularios y UIs de datos (para diversos propósitos/destinos). Los componentes se registran como custom elements con nombres que comienzan por `as-` (minúsculas) y siempre se usan como etiquetas HTML completas (con cierre).
+Conjunto selecto de componentes web como Web Components (custom elements) basados en **Solid** e inspirados en **VaadinUI**, orientados al uso común en formularios y **UI's** de datos (para diversos propósitos/destinos). Los componentes se registran como custom elements con nombres que comienzan por `as-` (minúsculas) y siempre se usan como etiquetas HTML completas (con cierre).
 
 **CUI** significa: Core/Cross/Common User Interface
 
@@ -28,7 +28,7 @@ Componentes incluidos (nombres de etiqueta):
 - `as-upload`
 - `as-video`
 
-> `as-event` es útil cuando necesitas un campo que dispare una acción personalizada (abrir modal, diálogo de archivos, etc.) en lugar de mostrar un dropdown
+> `as-event` es útil cuando necesitas un campo que dispare una acción personalizada (abrir modal, diálogo de archivos, etc.) en lugar de mostrar un `dropdown` (`select`)
 
 ## Modo de uso desde HTML estático (configuración simple)
 
