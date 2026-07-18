@@ -16,7 +16,7 @@ class AsDatagrid extends HTMLElement {
     const [columns, setColumns] = createSignal(this._columns)
     const [pageSize] = createSignal(parseInt(this.getAttribute('pageSize') || '15'))
     const [title] = createSignal(this.getAttribute('title') || '')
-    const [theme] = createSignal(this.getAttribute('theme') || '')
+    const [theme, setTheme] = createSignal(this.getAttribute('theme') || '')
     // Crear signals reactivos que se actualicen cuando cambien los atributos
     const [selectable, setSelectable] = createSignal(this.hasAttribute('selectable'))
     const [pageable, setPageable] = createSignal(this.hasAttribute('pageable'))
@@ -32,6 +32,7 @@ class AsDatagrid extends HTMLElement {
           if (attrName === 'pageable') setPageable(this.hasAttribute('pageable'))
           if (attrName === 'filterable') setFilterable(this.hasAttribute('filterable'))
           if (attrName === 'actionable') setActionable(this.hasAttribute('actionable'))
+          if (attrName === 'theme') setTheme(this.getAttribute('theme') || '')
         }
       })
     })

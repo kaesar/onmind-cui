@@ -1,11 +1,12 @@
 import { render } from 'solid-js/web'
-import { createSignal, For, onCleanup } from 'solid-js'
+import { createSignal, For } from 'solid-js'
 import { Abstract } from './Abstract'
 
 class AsPopup extends HTMLElement {
   private dispose?: () => void
   private _options: string = 'label=Editar,value=edit;label=Duplicar,value=duplicate;label=Eliminar,value=delete'
   public _currentRow: any = null
+  private _observer?: MutationObserver
 
   connectedCallback() {
     const [options, setOptions] = createSignal(this._options)
@@ -30,8 +31,8 @@ class AsPopup extends HTMLElement {
         }
       })
     })
+    this._observer = observer
     observer.observe(this, { attributes: true })
-    onCleanup(() => observer.disconnect())
 
     const show = (xPos: number, yPos: number) => {
       // Calcular posición inteligente
@@ -175,10 +176,6 @@ class AsPopup extends HTMLElement {
       setOptions(newOptions)
     }
 
-    onCleanup(() => {
-      removeOutsideClickListener()
-    })
-
     const Component = () => (
       <>
         <style>{`
@@ -298,6 +295,7 @@ class AsPopup extends HTMLElement {
 
   disconnectedCallback() {
     this.dispose?.()
+    this._observer?.disconnect()
   }
 
   set options(value: string) {

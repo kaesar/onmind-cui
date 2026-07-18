@@ -1,8 +1,9 @@
 import { render } from 'solid-js/web'
-import { createSignal, onCleanup } from 'solid-js'
+import { createSignal } from 'solid-js'
 
 class AsEmbed extends HTMLElement {
   private dispose?: () => void
+  private _observer?: MutationObserver
 
   connectedCallback() {
     const [width, setWidth] = createSignal(parseInt(this.getAttribute('width') || '1200'))
@@ -20,8 +21,8 @@ class AsEmbed extends HTMLElement {
         }
       })
     })
+    this._observer = observer
     observer.observe(this, { attributes: true })
-    onCleanup(() => observer.disconnect())
 
     const Component = () => (
       <>
@@ -62,6 +63,7 @@ class AsEmbed extends HTMLElement {
 
   disconnectedCallback() {
     this.dispose?.()
+    this._observer?.disconnect()
   }
 
   static get observedAttributes() {

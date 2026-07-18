@@ -4,12 +4,15 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + Lit + TS</title>
+    <title>Vite + SolidJS + TS</title>
     <link rel="stylesheet" href="./src/index.css" />
     <script type="module" src="/src/index.ts"></script>
   </head>
-  <body>
-    <as-box theme="dark">
+  <body class="theme-dark">
+    <div id="theme-toolbar">
+      <button id="themeToggle">☀️ Light Mode</button>
+    </div>
+    <as-box id="mainBox" theme="dark">
       <as-input label="Name" value="John"></as-input>
       <as-input label="Last Name" value="Doe"></as-input>
       <as-text label="Comments" rows="3" placeholder="Enter your comments"></as-text>
@@ -29,7 +32,32 @@
       <as-datagrid id="table" actionable theme="dark"></as-datagrid>
     </as-box>
     <script type="module">
-      const table = document.getElementById('table');
+      // ── Theme toggle ──────────────────────────────────────────
+      const mainBox = document.getElementById('mainBox');
+      const toggleBtn = document.getElementById('themeToggle');
+      const testModal = document.getElementById('testModal');
+      const tableEl = document.getElementById('table');
+
+      toggleBtn.addEventListener('click', () => {
+        const isDark = mainBox.getAttribute('theme') !== 'light';
+        const newTheme = isDark ? 'light' : 'dark';
+
+        // Container cascades to slotted children
+        mainBox.setAttribute('theme', newTheme);
+
+        // Components with explicit theme attributes
+        testModal.setAttribute('theme', newTheme);
+        tableEl.setAttribute('theme', newTheme);
+
+        // Body background
+        document.body.className = `theme-${newTheme}`;
+
+        // Button text
+        toggleBtn.textContent = isDark ? '🌙 Dark Mode' : '☀️ Light Mode';
+      });
+
+      // ── Rest of setup ─────────────────────────────────────────
+      const table = tableEl;
       table.data = Array.from({length: 57}, (_, i) => ({
         id: i + 1,
         name: `Usuario ${i + 1}`,
@@ -84,7 +112,6 @@
       });
       
       // Configurar formulario en modal
-      const testModal = document.getElementById('testModal');
       const userForm = document.getElementById('userForm');
       const openModalBtn = document.getElementById('openModalBtn');
       

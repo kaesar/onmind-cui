@@ -167,10 +167,3 @@ export function createStandardAttributes(
 
   return createAttributeObserver(element, configs)
 }
-
-export default {
-  createAttributeObserver,
-  createSyncedSignal,
-  createFormFieldAttributes,
-  createStandardAttributes
-}

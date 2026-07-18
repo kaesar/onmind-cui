@@ -1,8 +1,9 @@
 import { render } from 'solid-js/web'
-import { createSignal, onCleanup } from 'solid-js'
+import { createSignal } from 'solid-js'
 
 class AsModal extends HTMLElement {
   private dispose?: () => void
+  private _observer?: MutationObserver
 
   connectedCallback() {
     const [title, setTitle] = createSignal(this.getAttribute('title') || '')
@@ -48,8 +49,8 @@ class AsModal extends HTMLElement {
         }
       })
     })
+    this._observer = observer
     observer.observe(this, { attributes: true })
-    onCleanup(() => observer.disconnect())
 
     const show = () => {
       setOpen(true)
@@ -100,10 +101,6 @@ class AsModal extends HTMLElement {
     // Exponer métodos públicos
     ;(this as any).show = show
     ;(this as any).hide = hide
-
-    onCleanup(() => {
-      document.removeEventListener('keydown', handleKeyDown)
-    })
 
     const Component = () => (
       <>
@@ -199,6 +196,7 @@ class AsModal extends HTMLElement {
 
   disconnectedCallback() {
     this.dispose?.()
+    this._observer?.disconnect()
   }
 
   // API pública

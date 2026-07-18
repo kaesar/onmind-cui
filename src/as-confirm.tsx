@@ -1,8 +1,9 @@
 import { render } from 'solid-js/web'
-import { createSignal, onCleanup } from 'solid-js'
+import { createSignal } from 'solid-js'
 
 class AsConfirm extends HTMLElement {
   private dispose?: () => void
+  private _observer?: MutationObserver
 
   connectedCallback() {
     const [label, setLabel] = createSignal(this.getAttribute('label') || 'Oops!')
@@ -36,8 +37,8 @@ class AsConfirm extends HTMLElement {
         }
       })
     })
+    this._observer = observer
     observer.observe(this, { attributes: true })
-    onCleanup(() => observer.disconnect())
 
     const Component = () => (
       <>
@@ -130,6 +131,7 @@ class AsConfirm extends HTMLElement {
 
   disconnectedCallback() {
     this.dispose?.()
+    this._observer?.disconnect()
   }
 
   static get observedAttributes() {

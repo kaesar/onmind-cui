@@ -1,10 +1,11 @@
 import { render } from 'solid-js/web'
-import { createSignal, For, onMount, onCleanup } from 'solid-js'
+import { createSignal, For } from 'solid-js'
 
 class AsForm extends HTMLElement {
   private dispose?: () => void
   private _schema: any = {}
   private _hideTitle = false
+  private _handleKeyDown?: (e: KeyboardEvent) => void
 
   connectedCallback() {
     const [schema, setSchema] = createSignal(this._schema)
@@ -87,6 +88,8 @@ class AsForm extends HTMLElement {
         handleSubmit()
       }
     }
+    this._handleKeyDown = handleKeyDown
+    document.addEventListener('keydown', handleKeyDown)
 
     const showNotification = (msg: string, type: 'success' | 'error' = 'success') => {
       const notification = document.createElement('div')
@@ -97,7 +100,7 @@ class AsForm extends HTMLElement {
       setTimeout(() => notification.remove(), 3500)
     }
 
-    // Validation function (duplicated from AsFormBuilder for standalone use)
+    // Validation (shared logic with AsFormBuilder)
     const validateField = (value: any, rules: string[]) => {
       const validators: Record<string, { validate: (v: any, p: string) => boolean; message: (p: string) => string }> = {
         required: { validate: (v) => v && v.toString().trim().length > 0, message: () => 'This field is required' },
@@ -271,14 +274,6 @@ class AsForm extends HTMLElement {
       return options
     }
 
-    onMount(() => {
-      document.addEventListener('keydown', handleKeyDown)
-    })
-
-    onCleanup(() => {
-      document.removeEventListener('keydown', handleKeyDown)
-    })
-
     // Exponer métodos públicos para API
     ;(this as any).clearErrors = () => {
       setErrors({})
@@ -417,6 +412,9 @@ class AsForm extends HTMLElement {
 
   disconnectedCallback() {
     this.dispose?.()
+    if (this._handleKeyDown) {
+      document.removeEventListener('keydown', this._handleKeyDown)
+    }
   }
 
   set schema(value: any) {

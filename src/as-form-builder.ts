@@ -353,8 +353,3 @@ export class AsFormBuilder {
 
 // Export for different module systems
 export default AsFormBuilder
-
-// Make available globally for browser usage
-if (typeof window !== 'undefined') {
-    (window as any).AsFormBuilder = AsFormBuilder
-}
