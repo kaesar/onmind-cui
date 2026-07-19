@@ -9,6 +9,7 @@ Componentes incluidos (nombres de etiqueta):
 - `as-complete`
 - `as-box`
 - `as-button`
+- `as-cards`
 - `as-check`
 - `as-confirm`
 - `as-datagrid`

@@ -12,6 +12,7 @@
     <div id="theme-toolbar">
       <button id="themeToggle">☀️ Light Mode</button>
     </div>
+    
     <as-box id="mainBox" theme="dark">
       <as-input label="Name" value="John"></as-input>
       <as-input label="Last Name" value="Doe"></as-input>
@@ -31,12 +32,16 @@
       <as-button id="openModalBtn" label="Open Modal Form"></as-button>
       <as-datagrid id="table" actionable theme="dark"></as-datagrid>
     </as-box>
+
+    <as-cards id="cardsDemo" filtering title="Common/Componentes User Interface (CUI)" theme="dark" style="margin-top: 1rem; max-width: 900px;"></as-cards>
+
     <script type="module">
       // ── Theme toggle ──────────────────────────────────────────
       const mainBox = document.getElementById('mainBox');
       const toggleBtn = document.getElementById('themeToggle');
       const testModal = document.getElementById('testModal');
       const tableEl = document.getElementById('table');
+      const cardsDemo = document.getElementById('cardsDemo');
 
       toggleBtn.addEventListener('click', () => {
         const isDark = mainBox.getAttribute('theme') !== 'light';
@@ -48,6 +53,7 @@
         // Components with explicit theme attributes
         testModal.setAttribute('theme', newTheme);
         tableEl.setAttribute('theme', newTheme);
+        cardsDemo.setAttribute('theme', newTheme);
 
         // Body background
         document.body.className = `theme-${newTheme}`;
@@ -180,6 +186,32 @@
       userForm.addEventListener('form-cancel', () => {
         testModal.hide();
       });
+      
+      // ── as-cards demo ────────────────────────────────────────
+      cardsDemo.items = [
+        { title: 'as-input', description: 'Text input with label, supports text/email/password/number', tags: ['form', 'input'], url: '#' },
+        { title: 'as-text', description: 'Multi-line textarea with label and rows', tags: ['form', 'input'], url: '#' },
+        { title: 'as-select', description: 'Dropdown select with options format', tags: ['form', 'select'], url: '#' },
+        { title: 'as-complete', description: 'Autocomplete/combobox with filtering', tags: ['form', 'select'], url: '#' },
+        { title: 'as-date', description: 'Date picker with calendar dropdown', tags: ['form', 'picker'], url: '#' },
+        { title: 'as-time', description: 'Time picker with hour/minute/AM-PM selectors', tags: ['form', 'picker'], url: '#' },
+        { title: 'as-check', description: 'Single checkbox with label', tags: ['form', 'toggle'], url: '#' },
+        { title: 'as-switch', description: 'Toggle switch component', tags: ['form', 'toggle'], url: '#' },
+        { title: 'as-radio', description: 'Radio button group', tags: ['form', 'select'], url: '#' },
+        { title: 'as-upload', description: 'File upload with drag-and-drop', tags: ['form', 'upload'], url: '#' },
+        { title: 'as-button', description: 'Common button with label, link, and variants', tags: ['action'], url: '#' },
+        { title: 'as-confirm', description: 'Button with confirmation dialog', tags: ['action'], url: '#' },
+        { title: 'as-event', description: 'Input button that dispatches custom events', tags: ['action'], url: '#' },
+        { title: 'as-box', description: 'Container card for grouping components', tags: ['layout'], url: '#' },
+        { title: 'as-modal', description: 'Modal dialog with slot for content', tags: ['layout'], url: '#' },
+        { title: 'as-popup', description: 'Context menu with smart positioning', tags: ['layout'], url: '#' },
+        { title: 'as-datagrid', description: 'Data table with sort, filter, pagination', tags: ['data'], url: '#' },
+        { title: 'as-form', description: 'Schema-driven form with validation', tags: ['data', 'form'], url: '#' },
+        { title: 'as-cards', description: 'Card index with filtering and tag search', tags: ['data', 'layout'], url: '#' },
+        { title: 'as-image', description: 'Centered image display', tags: ['media'], url: '#' },
+        { title: 'as-video', description: 'Video embed for YouTube/Vimeo', tags: ['media'], url: '#' },
+        { title: 'as-embed', description: 'Responsive iframe embed (16:9)', tags: ['media'], url: '#' }
+      ];
     </script>
   </body>
 </html>

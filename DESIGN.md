@@ -458,6 +458,90 @@ Action button with variants.
 - **Primary**: Blue background (`#3b82f6`), white text
 - **Secondary**: Gray background (`#e5e7eb`), dark text
 
+#### `as-cards`
+Card index with filtering and tag-based search. Displays a grid of linked cards.
+
+**Attributes:**
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `title` | string | `''` | Optional heading |
+| `src` | string | `''` | URL to fetch JSON data from |
+| `filtering` | boolean | `false` | Enable filter input + tag filter |
+| `theme` | `light\|dark` | `''` | Theme |
+
+**Properties (JavaScript):**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `items` | `CardItem[]` | Array of card objects |
+
+**CardItem shape:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `title` / `name` | string | Card heading |
+| `description` | string | Card body text |
+| `url` | string | Link target |
+| `tags` | string[] | Tag labels (for tag filter) |
+| `hide` | boolean | If true, item is filtered out |
+
+**Events:**
+- `card-click` (detail: `{ item }`) — when a card is clicked
+
+**Styling:**
+
+**Light theme (default):**
+| Element | Style |
+|---------|-------|
+| Card background | `white` |
+| Card shadow | `0 3px 10px 0 #aaa` |
+| Card hover | `scale(1.05)`, shadow `0 4px 14px 0 #1676f3`, text `#1676f3` |
+| Card title | `#1676f3` (azul primario), `font-weight: 600` |
+| Card description | `#6b7280` (gris medio) |
+| Tag background | `#f3f4f6` (gris claro), sin borde |
+| Tag text | `#374151` (gris oscuro) |
+| Tag hover background | `#e5e7eb` |
+| Tag selected | `background: #3b82f6`, text `white` |
+| Filter input | Surface consistency `#e8eaed`, texto `#1a1a1a`, `border-radius: 20px` |
+| Grid | `repeat(auto-fit, minmax(12rem, 1fr))`, `gap: 1.5rem`, `grid-auto-rows: 12rem` |
+
+**Dark theme (`theme="dark"`):**
+| Element | Style |
+|---------|-------|
+| Card background | `rgba(255,255,255,0.06)` |
+| Card shadow | `0 2px 8px 0 rgba(0,0,0,0.4)` |
+| Card `backdrop-filter` | `blur(2px)` |
+| Card hover | `scale(1.03)`, shadow `0 3px 12px 0 #3b82f6`, text `#60a5fa` |
+| Card title | `#60a5fa`, `font-weight: 600` |
+| Card description | `#9ca3af` |
+| Tag background | `transparent`, borde `#4b5563` |
+| Tag text | `#d1d5db` |
+| Tag hover | `rgba(255,255,255,0.08)`, borde `#60a5fa` |
+| Tag selected | `background: #3b82f6`, borde `#3b82f6`, text `white` |
+| Title heading | `#f3f4f6` |
+
+**Shared rules:**
+- Filter input background always `#e8eaed` independent of theme (surface consistency)
+- `.card-title` always has `border-bottom: 0.1px solid #aaa` (light) / `#4b5563` (dark)
+- Grid collapses to single column at ≤580px
+- Tags use `border-radius: 0.375rem` and `transition: background-color 0.2s, color 0.2s, border-color 0.2s`
+- Cards use `transition: transform 0.3s, box-shadow 0.3s`
+
+**Data sources (either works):**
+```html
+<!-- Via src attribute (auto-fetch) -->
+<as-cards src="/api/data.json" filtering></as-cards>
+
+<!-- Via JS property (manual) -->
+<as-cards id="myCards" filtering></as-cards>
+<script>
+  myCards.items = [
+    { title: 'Hello', description: 'World', tags: ['demo'], url: '/page' }
+  ]
+</script>
+```
+
 #### `as-confirm`
 Confirm dialog triggered by button.
 
@@ -487,18 +571,16 @@ Context menu/popup with smart positioning.
 
 **Features:** Auto-closes on outside click, confirms dangerous actions (delete/remove/destroy)
 
----
+<!--
 
 ## Bundle Size
 
 | Version | Framework | Build Output (gzipped) |
 |---------|-----------|------------------------|
-| v2.0.0 | Lit 3 | ~45 KB |
-| v3.0.0 | SolidJS | ~22 KB |
+| v2.0.0 (x21) | Lit 3 | ~23 KB |
+| v3.0.0 (x22) | SolidJS | ~24 KB |
 
-**Savings:** ~47% reduction
-
----
+-->
 
 ## Browser Support
 

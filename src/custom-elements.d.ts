@@ -167,6 +167,15 @@ declare module 'solid-js' {
         readonly?: boolean
         disabled?: boolean
       }
+      'as-cards': {
+        title?: string
+        src?: string
+        filtering?: boolean
+        theme?: 'light' | 'dark'
+        items?: any[]
+        onCardClick?: (e: CustomEvent<{ item: any }>) => void
+        'on:card-click'?: (e: CustomEvent<{ item: any }>) => void
+      }
       'as-popup': {
         options?: string
         theme?: 'light' | 'dark'

@@ -13,6 +13,7 @@ Component | Description
 `as-complete` | Autocomplete/ComboBox component
 `as-box` | Similar to Card to group components inside
 `as-button` | Common Button component
+`as-cards` | Card index with filtering and tag search
 `as-check` | Common Checkbox component
 `as-confirm` | Dialog with Modal with confirm action
 `as-datagrid` | Data grid/table with sorting, filtering and pagination
@@ -38,8 +39,8 @@ Component | Description
 
 1. Clone it or download: `git clone https://github.com/kaesar/onmind-cui.git cui`
 2. Open the folder from terminal: `cd cui`
-3. Install modules: `npm install`
-4. Lauch vite: `npm start`
+3. Install modules: `bun install`
+4. Lauch vite: `bun start`
 
 > You get the `cui.js` file under `dist` folder and put in a `script` tag in `html` (e.g. in `head`)
 
