@@ -219,26 +219,33 @@ class AsDate extends HTMLElement {
             color: #f3f4f6;
           }
           :host([theme="dark"]) .dropdown {
-            background: #262626;
-            border-color: #525252;
+            background: #1f2937;
+            border-color: #4b5563;
           }
           :host([theme="dark"]) .header button {
             color: #e5e5e5;
           }
           :host([theme="dark"]) .header button:hover {
-            background: #404040;
+            background: #374151;
           }
           :host([theme="dark"]) .month-year {
-            color: #e5e5e5;
+            color: #f3f4f6;
           }
           :host([theme="dark"]) .weekday {
-            color: #e5e5e5;
+            color: #9ca3af;
           }
           :host([theme="dark"]) .day {
-            color: #e5e5e5;
+            color: #e5e7eb;
           }
           :host([theme="dark"]) .day:hover {
-            background: #404040;
+            background: #374151;
+          }
+          :host([theme="dark"]) .day.selected {
+            background: #3b82f6;
+            color: #ffffff;
+          }
+          :host([theme="dark"]) .day.other-month {
+            opacity: 0.25;
           }
         `}</style>
         <div class="field">

@@ -51,9 +51,9 @@ Component | Description
 | Version | Framework | Build Output (gzipped) |
 |---------|-----------|------------------------|
 | v2.0.0 (x21) | Lit 3 | ~23 KB |
-| v3.0.0 (x22) | SolidJS | ~24 KB |
+| v3.0.0 (x22) | SolidJS | ~25 KB |
 
-> **SolidJS** is the library (Framework) used in the current version
+> **SolidJS** is the library (Framework) used in the current version with some optimizations
 
 <!--
 ## Creating New Components

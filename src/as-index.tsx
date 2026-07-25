@@ -18,6 +18,7 @@ class AsIndex extends HTMLElement {
   private themeCleanup?: () => void
   private _items: CardItem[] = []
   private _setItems?: (val: CardItem[]) => void
+  private _abortController?: AbortController
 
   currentLang() {
     const langAttr = this.getAttribute('lang')
@@ -59,10 +60,16 @@ class AsIndex extends HTMLElement {
 
     const loadData = async (url: string) => {
       if (!url) return
+      // Cancel previous in-flight fetch
+      this._abortController?.abort()
+      const controller = new AbortController()
+      this._abortController = controller
       setLoading(true)
       try {
-        const res = await fetch(url)
+        const res = await fetch(url, { signal: controller.signal })
         const data = await res.json()
+        // Skip if this request was aborted (another one superseded it)
+        if (controller.signal.aborted) return
         const lang = this.currentLang()
         const list = (Array.isArray(data) ? data : [])
           .filter((e: CardItem) => !e.hide && (!lang || !e.language || e.language === lang))
@@ -72,15 +79,11 @@ class AsIndex extends HTMLElement {
         this._items = list
         setItems(list)
       } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') return
         console.error('as-index fetch error:', err)
       } finally {
-        setLoading(false)
+        if (!controller.signal.aborted) setLoading(false)
       }
-    }
-
-    const fetchSrc = () => {
-      const url = src()
-      if (url && items().length === 0) loadData(url)
     }
 
     // React to attribute changes
@@ -89,9 +92,14 @@ class AsIndex extends HTMLElement {
         if (mutation.type === 'attributes') {
           const attr = mutation.attributeName
           if (attr === 'title') setTitle(this.getAttribute('title') || '')
-          if (attr === 'src') { setSrc(this.getAttribute('src') || ''); fetchSrc() }
+          if (attr === 'src') {
+            setSrc(this.getAttribute('src') || '')
+            if (this.getAttribute('src')) loadData(this.getAttribute('src') || '')
+          }
           if (attr === 'filtering') setFiltering(this.hasAttribute('filtering'))
-          if (attr === 'lang') fetchSrc()
+          if (attr === 'lang') {
+            if (src()) loadData(src())
+          }
         }
       })
     })
@@ -126,6 +134,12 @@ class AsIndex extends HTMLElement {
             display: block;
             font-family: -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", Helvetica, Arial, sans-serif;
             margin-bottom: 2rem;
+            color: #1f2937;
+            color-scheme: light;
+          }
+          :host([theme="dark"]) {
+            color: #e5e7eb;
+            color-scheme: dark;
           }
           .header {
             text-align: ${hasManyItems() ? 'left' : 'center'};
@@ -167,20 +181,22 @@ class AsIndex extends HTMLElement {
           .tag {
             padding: 0.35rem 0.75rem;
             border-radius: 0.375rem;
-            border: 1px solid transparent;
+            border: 1px solid #e5e7eb;
             background: #f3f4f6;
-            color: #374151;
+            color: #1f2937;
             font-size: 0.8125rem;
             font-family: inherit;
+            font-weight: 500;
             cursor: pointer;
             transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
           }
           .tag:hover {
             background: #e5e7eb;
+            color: #111827;
           }
           .tag.selected {
             background: #3b82f6;
-            color: white;
+            color: #ffffff;
             border-color: #3b82f6;
           }
           .grid {
@@ -201,7 +217,7 @@ class AsIndex extends HTMLElement {
             overflow: hidden;
             cursor: pointer;
             transition: transform 0.3s, box-shadow 0.3s;
-            background: white;
+            background: #ffffff;
             color: #1f2937;
             display: flex;
             flex-direction: column;
@@ -209,7 +225,6 @@ class AsIndex extends HTMLElement {
           .card:hover {
             transform: scale(1.05);
             box-shadow: 0 4px 14px 0 #1676f3;
-            color: #1676f3;
           }
           .card-title {
             border-bottom: 0.1px solid #aaa;
@@ -222,9 +237,12 @@ class AsIndex extends HTMLElement {
             white-space: nowrap;
             color: #1676f3;
           }
+          .card:hover .card-title {
+            color: #1676f3;
+          }
           .card-desc {
             font-size: 0.8125rem;
-            color: #6b7280;
+            color: #4b5563;
             overflow: hidden;
             text-overflow: ellipsis;
             flex: 1;
@@ -232,47 +250,65 @@ class AsIndex extends HTMLElement {
           .loading {
             text-align: center;
             padding: 2rem;
-            color: #9ca3af;
+            color: #6b7280;
           }
           .empty {
             text-align: center;
             padding: 2rem;
-            color: #9ca3af;
+            color: #6b7280;
           }
           :host([theme="dark"]) .title {
             color: #f3f4f6;
           }
+          :host([theme="dark"]) .filter-input {
+            color: #f3f4f6;
+            background: #374151;
+          }
+          :host([theme="dark"]) .filter-input::placeholder {
+            color: #9ca3af;
+          }
           :host([theme="dark"]) .card {
             background: rgba(255,255,255,0.06);
-            color: #e5e5e5;
-            box-shadow: 0 2px 8px 0 rgba(0,0,0,0.4);
+            color: #e5e7eb;
+            /* Black near the edge (separates from card border), then gray smoke fade */
+            box-shadow:
+              0 1px 2px 0 rgba(0, 0, 0, 0.85),
+              0 2px 8px 0 rgba(0, 0, 0, 0.45),
+              0 4px 14px 0 rgba(156, 163, 175, 0.28);
             backdrop-filter: blur(2px);
           }
           :host([theme="dark"]) .card:hover {
             transform: scale(1.03);
             box-shadow: 0 3px 12px 0 #3b82f6;
-            color: #60a5fa;
           }
           :host([theme="dark"]) .card-desc {
-            color: #9ca3af;
+            color: #d1d5db;
           }
           :host([theme="dark"]) .card-title {
-            border-color: #4b5563;
+            border-color: #6b7280;
+            color: #60a5fa;
+          }
+          :host([theme="dark"]) .card:hover .card-title {
             color: #60a5fa;
           }
           :host([theme="dark"]) .tag {
-            background: transparent;
-            border-color: #4b5563;
-            color: #d1d5db;
+            background: rgba(255,255,255,0.08);
+            border-color: #6b7280;
+            color: #f3f4f6;
           }
           :host([theme="dark"]) .tag:hover {
-            background: rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.14);
             border-color: #60a5fa;
+            color: #ffffff;
           }
           :host([theme="dark"]) .tag.selected {
             background: #3b82f6;
             border-color: #3b82f6;
-            color: white;
+            color: #ffffff;
+          }
+          :host([theme="dark"]) .loading,
+          :host([theme="dark"]) .empty {
+            color: #9ca3af;
           }
           @media (max-width: 580px) {
             .grid {
@@ -340,7 +376,7 @@ class AsIndex extends HTMLElement {
     this.themeCleanup = createThemeSync(this)
 
     // Auto-fetch if src attribute is present
-    fetchSrc()
+    if (src()) loadData(src())
   }
 
   disconnectedCallback() {

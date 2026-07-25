@@ -22,7 +22,7 @@ Inspired by Vaadin's approach where input fields maintain a light, readable surf
 
 | Element | Style (light & dark) | Reason |
 |---------|----------------------|--------|
-| Input / textarea / trigger | `background: #e8eaed`, `color: #1a1a1a` | High contrast, clean readability |
+| Input / textarea / trigger | `background: #e8eaed` <span style="color: #e8eaed">&block;&block;&block;&block;</span>, `color: #1a1a1a` <span style="color: #1a1a1a">&block;&block;&block;&block;</span> | High contrast, clean readability |
 | Label | Reacts to theme (`#374151` <span style="color: #374151">&block;&block;&block;&block;</span> dark) | Respects surrounding context |
 | SVG icon / chevron | Always `#1f2937` <span style="color: #1f2937">&block;&block;&block;&block;</span> (dark) | Maximum contrast on light surface |
 | Placeholder | Always `#737373` <span style="color: #737373">&block;&block;&block;&block;</span> | Independent of theme |
@@ -233,14 +233,71 @@ Dropdown/select component with options format `label=Label,value=value`.
 #### `as-complete`
 Autocomplete/combobox with filtering.
 
+**Performance:** Options are parsed once via `createMemo` (re-parsed only when `options` attribute changes). Filtering is also memoized and debounced (150ms) to avoid churn on rapid typing.
+
 **Styling:** Input follows surface consistency rule — `#e8eaed` <span style="color: #e8eaed">&block;&block;&block;&block;</span> background independent of theme. Dropdown adapts to theme.
 
-**Attributes:** Same as `as-select` plus `placeholder` (default: `'Buscar...'`)
+**Light theme (default):**
+| Element | Style |
+|---------|-------|
+| Input background | `#e8eaed` <span style="color: #e8eaed">&block;&block;&block;&block;</span>, text `#1a1a1a` |
+| Dropdown background | `#ffffff` |
+| Dropdown border | `#d1d5db` <span style="color: #d1d5db">&block;&block;&block;&block;</span> |
+| Option hover | `#f3f4f6` <span style="color: #f3f4f6">&block;&block;&block;&block;</span> |
+
+**Dark theme (`theme="dark"`):**
+| Element | Style |
+|---------|-------|
+| Dropdown background | `#1f2937` <span style="color: #1f2937">&block;&block;&block;&block;</span> |
+| Dropdown border | `#4b5563` <span style="color: #4b5563">&block;&block;&block;&block;</span> |
+| Option text | `#f3f4f6` <span style="color: #f3f4f6">&block;&block;&block;&block;</span> |
+| Option hover | `#374151` <span style="color: #374151">&block;&block;&block;&block;</span> |
+
+**Attributes:** Same as `as-select` plus:
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `src` | string | `''` | URL to fetch options JSON from (alternative to `options`) |
+| `placeholder` | string | label value | Input placeholder text |
+
+**Data sources (either works):**
+```html
+<!-- Via options attribute (local) -->
+<as-complete options="label=JS,value=js;label=TS,value=ts"></as-complete>
+
+<!-- Via src attribute (fetch JSON) -->
+<as-complete src="/api/tags.json"></as-complete>
+```
+
+When `src` is present, options are fetched once and cached locally. The JSON must be an array of objects with `label` and `value` fields. Falls back to `options` attribute when `src` is empty.
 
 #### `as-date`
 Date picker with calendar dropdown.
 
 **Styling:** Trigger follows surface consistency rule — `#e8eaed` <span style="color: #e8eaed">&block;&block;&block;&block;</span> background independent of theme. Calendar dropdown adapts to theme.
+
+**Light theme (default):**
+| Element | Style |
+|---------|-------|
+| Trigger background | `#e8eaed` <span style="color: #e8eaed">&block;&block;&block;&block;</span>, text `#1a1a1a` |
+| Dropdown background | `#ffffff` |
+| Dropdown border | `#d1d5db` <span style="color: #d1d5db">&block;&block;&block;&block;</span> |
+| Day hover | `#f3f4f6` <span style="color: #f3f4f6">&block;&block;&block;&block;</span> |
+| Day selected | `background: #1676f3` <span style="color: #1676f3">&block;&block;&block;&block;</span>, text `#ffffff` |
+| Other month day | `opacity: 0.3` |
+
+**Dark theme (`theme="dark"`):**
+| Element | Style |
+|---------|-------|
+| Dropdown background | `#1f2937` <span style="color: #1f2937">&block;&block;&block;&block;</span> (coherente con as-complete) |
+| Dropdown border | `#4b5563` <span style="color: #4b5563">&block;&block;&block;&block;</span> |
+| Header / nav buttons | text `#e5e5e5`, hover `#374151` <span style="color: #374151">&block;&block;&block;&block;</span> |
+| Month/year title | `#f3f4f6` <span style="color: #f3f4f6">&block;&block;&block;&block;</span> |
+| Weekday label | `#9ca3af` <span style="color: #9ca3af">&block;&block;&block;&block;</span> |
+| Day text | `#e5e7eb` <span style="color: #e5e7eb">&block;&block;&block;&block;</span> |
+| Day hover | `#374151` <span style="color: #374151">&block;&block;&block;&block;</span> |
+| Day selected | `background: #3b82f6` <span style="color: #3b82f6">&block;&block;&block;&block;</span>, text `#ffffff` |
+| Other month day | `opacity: 0.25` |
 
 **Attributes:** `label`, `value` (YYYY-MM-DD), `placeholder`, `theme`, `readonly`, `disabled`
 
@@ -250,6 +307,29 @@ Date picker with calendar dropdown.
 Time picker with hour/minute/AM-PM selectors.
 
 **Styling:** Trigger follows surface consistency rule — `#e8eaed` <span style="color: #e8eaed">&block;&block;&block;&block;</span> background independent of theme. Time picker dropdown adapts to theme.
+
+**Light theme (default):**
+| Element | Style |
+|---------|-------|
+| Trigger background | `#e8eaed` <span style="color: #e8eaed">&block;&block;&block;&block;</span>, text `#1a1a1a` |
+| Dropdown background | `#ffffff` |
+| Dropdown border | `#d1d5db` <span style="color: #d1d5db">&block;&block;&block;&block;</span> |
+| Time display (HH:MM) | `#1f2937` <span style="color: #1f2937">&block;&block;&block;&block;</span>, separador `#d1d5db` |
+| Option hover | `#f3f4f6` <span style="color: #f3f4f6">&block;&block;&block;&block;</span> |
+| Option selected (column) | `#e3f2fd`, text `#1676f3` <span style="color: #1676f3">&block;&block;&block;&block;</span> |
+| Option selected (AM/PM) | `background: #1676f3` <span style="color: #1676f3">&block;&block;&block;&block;</span>, text `#ffffff` |
+
+**Dark theme (`theme="dark"`):**
+| Element | Style |
+|---------|-------|
+| Dropdown background | `#1f2937` <span style="color: #1f2937">&block;&block;&block;&block;</span> (coherente con as-complete) |
+| Dropdown border | `#4b5563` <span style="color: #4b5563">&block;&block;&block;&block;</span> |
+| Time display (HH:MM) | text `#f3f4f6` <span style="color: #f3f4f6">&block;&block;&block;&block;</span>, separador `#4b5563` |
+| Column divider | `#4b5563` <span style="color: #4b5563">&block;&block;&block;&block;</span> |
+| Option text | `#e5e7eb` <span style="color: #e5e7eb">&block;&block;&block;&block;</span> |
+| Option hover | `#374151` <span style="color: #374151">&block;&block;&block;&block;</span> |
+| Option selected (column) | `background: #1e3a5f` <span style="color: #1e3a5f">&block;&block;&block;&block;</span>, text `#60a5fa` <span style="color: #60a5fa">&block;&block;&block;&block;</span> |
+| Option selected (AM/PM) | `background: #3b82f6` <span style="color: #3b82f6">&block;&block;&block;&block;</span>, text `#ffffff` |
 
 #### `as-checkbox` / `as-check`
 Single checkbox with label.
@@ -325,6 +405,8 @@ Modal dialog with slot for content.
 #### `as-datagrid`
 Feature-rich data table.
 
+**Performance:** The data pipeline (filter → sort → paginate) is fully memoized with `createMemo`. Each step only recomputes when its direct dependencies change. Filter input has 300ms debounce. CSS is static (no inline `theme()` expressions), so theme changes do not cause re-renders. Handles thousands of rows efficiently.
+
 **Properties (JavaScript):**
 
 | Property | Type | Description |
@@ -335,13 +417,25 @@ Feature-rich data table.
 | `pageable` | boolean | Enable pagination |
 | `filterable` | boolean | Enable filtering |
 | `actionable` | boolean | Show action menu |
-| `pageSize` | number | Rows per page (default: 15) |
+| `pageSize` | number | Rows per page (default: 50) |
 | `title` | string | Table title |
 | `theme` | `light\|dark` | Theme |
 
 **Events:**
 - `row-select` (detail: `{ row, id }`)
 - `row-action` (detail: `{ row, id, event }`)
+
+**Styling — Dark theme (`theme="dark"`):**
+| Element | Style |
+|---------|-------|
+| Container background | `#1f2937` <span style="color: #1f2937">&block;&block;&block;&block;</span> |
+| Container text | `#f3f4f6` <span style="color: #f3f4f6">&block;&block;&block;&block;</span> |
+| Thead background | `#111827` <span style="color: #111827">&block;&block;&block;&block;</span> |
+| Thead border | `#374151` <span style="color: #374151">&block;&block;&block;&block;</span> |
+| Row hover, nth-child(even) | `#1e3a5f` / `#111827` |
+| Row selected | `background: #1d4ed8` <span style="color: #1d4ed8">&block;&block;&block;&block;</span> |
+| Filter input | `#374151` <span style="color: #374151">&block;&block;&block;&block;</span>, text `#f3f4f6` |
+| Page buttons | `#374151` bg, `#4b5563` border |
 
 **Attributes:** `selectable`, `pageable`, `filterable`, `actionable`, `theme`, `title`
 
@@ -498,36 +592,45 @@ Card index with filtering and tag-based search. Displays a grid of linked cards.
 **Light theme (default):**
 | Element | Style |
 |---------|-------|
-| Card background | `white` |
-| Card shadow | `0 3px 10px 0 #aaa` |
-| Card hover | `scale(1.05)`, shadow `0 4px 14px 0 #1676f3` <span style="color: #1676f3">&block;&block;&block;&block;</span>, text `#1676f3` <span style="color: #1676f3">&block;&block;&block;&block;</span> |
+| Card background | `#ffffff` <span style="color: #ffffff">&block;&block;&block;&block;</span> |
+| Card shadow | `0 3px 10px 0 #aaa` <span style="color: #aaaaaa">&block;&block;&block;&block;</span> |
+| Card hover | `scale(1.05)`, shadow `0 4px 14px 0 #1676f3` <span style="color: #1676f3">&block;&block;&block;&block;</span> |
 | Card title | `#1676f3` <span style="color: #1676f3">&block;&block;&block;&block;</span> (azul primario), `font-weight: 600` |
-| Card description | `#6b7280` <span style="color: #6b7280">&block;&block;&block;&block;</span> (gris medio) |
-| Tag background | `#f3f4f6` <span style="color: #f3f4f6">&block;&block;&block;&block;</span> (gris claro), sin borde |
-| Tag text | `#374151` <span style="color: #374151">&block;&block;&block;&block;</span> (gris oscuro) |
-| Tag hover background | `#e5e7eb` <span style="color: #e5e7eb">&block;&block;&block;&block;</span> |
-| Tag selected | `background: #3b82f6`, text `white` |
+| Card description | `#4b5563` <span style="color: #4b5563">&block;&block;&block;&block;</span> (gris medio-oscuro, buena legibilidad) |
+| Tag background | `#f3f4f6` <span style="color: #f3f4f6">&block;&block;&block;&block;</span> (gris claro) |
+| Tag border | `#e5e7eb` <span style="color: #e5e7eb">&block;&block;&block;&block;</span> (1px sólido) |
+| Tag text | `#1f2937` <span style="color: #1f2937">&block;&block;&block;&block;</span> (gris muy oscuro, alto contraste) |
+| Tag hover background | `#e5e7eb` <span style="color: #e5e7eb">&block;&block;&block;&block;</span>, text `#111827` <span style="color: #111827">&block;&block;&block;&block;</span> |
+| Tag selected | `background: #3b82f6` <span style="color: #3b82f6">&block;&block;&block;&block;</span>, text `#ffffff` <span style="color: #ffffff">&block;&block;&block;&block;</span>, borde `#3b82f6` <span style="color: #3b82f6">&block;&block;&block;&block;</span> |
+| Tag weight | `500` (medium) |
 | Filter input | Surface consistency `#e8eaed` <span style="color: #e8eaed">&block;&block;&block;&block;</span>, `border-radius: 20px` |
+| :host text color | `#1f2937` <span style="color: #1f2937">&block;&block;&block;&block;</span> (fallback para tags/libs que heredan color de VitePress) |
+| :host color-scheme | `light` |
 | Grid | `repeat(auto-fit, minmax(12rem, 1fr))`, `gap: 1.5rem`, `grid-auto-rows: 12rem` |
 
 **Dark theme (`theme="dark"`):**
 | Element | Style |
 |---------|-------|
 | Card background | `rgba(255,255,255,0.06)` |
-| Card shadow | `0 2px 8px 0 rgba(0,0,0,0.4)` |
+| Card shadow (layered) | `0 1px 2px 0 rgba(0,0,0,0.85)` (borde negro, separa del fondo),
+`0 2px 8px 0 rgba(0,0,0,0.45)` (humo negro),
+`0 4px 14px 0 rgba(156,163,175,0.28)` (halo gris exterior) |
 | Card `backdrop-filter` | `blur(2px)` |
-| Card hover | `scale(1.03)`, shadow `0 3px 12px 0 #3b82f6` <span style="color: #3b82f6">&block;&block;&block;&block;</span>, text `#60a5fa` <span style="color: #60a5fa">&block;&block;&block;&block;</span> |
+| Card hover | `scale(1.03)`, shadow `0 3px 12px 0 #3b82f6` <span style="color: #3b82f6">&block;&block;&block;&block;</span> |
 | Card title | `#60a5fa` <span style="color: #60a5fa">&block;&block;&block;&block;</span>, `font-weight: 600` |
-| Card description | `#9ca3af` <span style="color: #9ca3af">&block;&block;&block;&block;</span> |
-| Tag background | `transparent`, borde `#4b5563` <span style="color: #4b5563">&block;&block;&block;&block;</span> |
-| Tag text | `#d1d5db` <span style="color: #d1d5db">&block;&block;&block;&block;</span> |
-| Tag hover | `rgba(255,255,255,0.08)`, borde `#60a5fa` <span style="color: #60a5fa">&block;&block;&block;&block;</span> |
-| Tag selected | `background: #3b82f6`, borde `#3b82f6` <span style="color: #3b82f6">&block;&block;&block;&block;</span>, text `white` |
+| Card description | `#d1d5db` <span style="color: #d1d5db">&block;&block;&block;&block;</span> (gris claro, mejora legibilidad respecto a `#9ca3af` <span style="color: #9ca3af">&block;&block;&block;&block;</span>) |
+| Tag background | `rgba(255,255,255,0.08)` (translúcido) |
+| Tag border | `#6b7280` <span style="color: #6b7280">&block;&block;&block;&block;</span> |
+| Tag text | `#f3f4f6` <span style="color: #f3f4f6">&block;&block;&block;&block;</span> (casi blanco) |
+| Tag hover | `rgba(255,255,255,0.14)`, borde `#60a5fa` <span style="color: #60a5fa">&block;&block;&block;&block;</span>, text `#ffffff` <span style="color: #ffffff">&block;&block;&block;&block;</span> |
+| Tag selected | `background: #3b82f6` <span style="color: #3b82f6">&block;&block;&block;&block;</span>, borde `#3b82f6` <span style="color: #3b82f6">&block;&block;&block;&block;</span>, text `#ffffff` <span style="color: #ffffff">&block;&block;&block;&block;</span> |
 | Title heading | `#f3f4f6` <span style="color: #f3f4f6">&block;&block;&block;&block;</span> |
+| :host text color | `#e5e7eb` <span style="color: #e5e7eb">&block;&block;&block;&block;</span> (fallback) |
+| :host color-scheme | `dark` |
+| Filter input bg | `#374151` <span style="color: #374151">&block;&block;&block;&block;</span>, text `#f3f4f6` <span style="color: #f3f4f6">&block;&block;&block;&block;</span> |
 
 **Shared rules:**
-- Filter input background always `#e8eaed` <span style="color: #e8eaed">&block;&block;&block;&block;</span> independent of theme (surface consistency)
-- `.card-title` always has `border-bottom: 0.1px solid #aaa` (light) / `#4b5563` <span style="color: #4b5563">&block;&block;&block;&block;</span> (dark)
+- `.card-title` siempre tiene `border-bottom: 0.1px solid #aaa` (light) / `#6b7280` <span style="color: #6b7280">&block;&block;&block;&block;</span> (dark)
 - Grid collapses to single column at ≤580px
 - Tags use `border-radius: 0.375rem` and `transition: background-color 0.2s, color 0.2s, border-color 0.2s`
 - Cards use `transition: transform 0.3s, box-shadow 0.3s`
@@ -739,7 +842,10 @@ createFormFieldAttributes({
 
 ### Global Theme Synchronization (`createThemeSync`)
 
-To make a component automatically react to global theme changes (VitePress `.dark` class on `<html>`, Astro `data-theme`, or system `prefers-color-scheme`), call `createThemeSync` in `connectedCallback`:
+Automatically synchronizes a component's `theme` attribute with the page's global theme.  
+Works with **VitePress** (`.dark` class / `data-appearance`), **Astro** (`data-theme`), and system `prefers-color-scheme`.
+
+**Call it in `connectedCallback`** and return the cleanup function:
 
 ```typescript
 import { createThemeSync } from './theme-sync'
@@ -748,28 +854,35 @@ class AsMyComponent extends HTMLElement {
   private vpThemeCleanup?: () => void
 
   connectedCallback() {
-    // Sync component's 'theme' attribute with global dark/light mode
     this.vpThemeCleanup = createThemeSync(this)
-    
-    // ... rest of component
+    // ...
   }
 
   disconnectedCallback() {
-    this.vpThemeCleanup?.()  // Required cleanup
+    this.vpThemeCleanup?.()
   }
 }
 ```
+
+**Resolution order (the first match wins):**
+
+1. **Local lock** — if the element already has a `theme` attribute at mount time (e.g. `<my-comp theme="dark">`), the sync **never** overwrites it. The page/script must manage it explicitly.
+2. **Explicit page theme** — `data-theme="dark|light"` or `data-appearance="dark|light"` on `<html>`, or class `dark`/`light`.
+3. **System/auto** — when `data-theme="system"` or `data-theme="auto"`, follows `prefers-color-scheme: dark`.
+4. **Default** — `light` (VitePress light mode is simply the absence of `.dark`).
+
+> ⚠️ **Important:** The OS dark preference does **not** override a page that is intentionally light (no `.dark` class). This avoids as-index rendering dark styles inside a light-mode VitePress page.
 
 **Options:**
 
 ```typescript
 createThemeSync(element, {
-  syncClass: 'dark',              // Class to watch on targetElement (default: 'dark')
-  targetElement: document.documentElement, // Element to observe (default: <html>)
-  themeAttribute: 'theme',        // Attribute to set on component (default: 'theme')
-  lightValue: 'light',            // Value for light theme (default: 'light')
-  darkValue: 'dark',              // Value for dark theme (default: 'dark')
-  respectSystemPreference: true   // Fallback to prefers-color-scheme (default: true)
+  syncClass: 'dark',                    // Class to watch on targetElement (default: 'dark')
+  targetElement: document.documentElement,     // Element to observe (default: <html>)
+  themeAttribute: 'theme',              // Attribute to set on component (default: 'theme')
+  lightValue: 'light',                  // Value for light theme (default: 'light')
+  darkValue: 'dark',                    // Value for dark theme (default: 'dark')
+  respectSystemPreference: true         // Follows OS when data-theme="system|auto" (default: true)
 })
 ```
 
@@ -782,6 +895,8 @@ this.vpThemeCleanup = createThemeSyncWithLocalOverride(this, (theme) => {
 ```
 
 **Components using global sync:** `as-index`, `as-box`, `as-datagrid`, `as-form`, `as-modal`, `as-confirm`.
+
+> **⚠️ PUB deployment note:** After rebuilding CUI (`npm run build`), the new `dist/cui.js` must be copied to **every** PUB site's public folder (`sites/*/docs/public/cui.js`). The `build-site.js` task does this automatically, but when copying manually ensure all three sites are updated — VitePress caches each site's `cui.js` independently. The `common/public/cui.js` is the **single source of truth** for all sites.
 
 **API Reference:**
 
@@ -807,7 +922,8 @@ When adding a new component, verify:
 - [ ] Added to `src/custom-elements.d.ts` (TypeScript types)
 - [ ] Demo in `index.html`
 - [ ] Entry in `README.md` component table
-- [ ] Build passes (`bun run build`)
+- [ ] Build passes (`npm run build`)
+- [ ] `dist/cui.js` copied to `../pub/common/public/cui.js` and to each PUB site (`sites/*/docs/public/cui.js`)
 
 ---
 

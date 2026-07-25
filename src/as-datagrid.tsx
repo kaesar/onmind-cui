@@ -1,5 +1,5 @@
 import { render } from 'solid-js/web'
-import { createSignal, For } from 'solid-js'
+import { createSignal, For, createMemo } from 'solid-js'
 import { createThemeSync } from './theme-sync'
 
 interface Column {
@@ -12,18 +12,36 @@ class AsDatagrid extends HTMLElement {
   private themeCleanup?: () => void
   private _data: any[] = []
   private _columns: Column[] = []
+  private _filterTimer?: ReturnType<typeof setTimeout>
 
   connectedCallback() {
     const [data, setData] = createSignal(this._data)
     const [columns, setColumns] = createSignal(this._columns)
-    const [pageSize] = createSignal(parseInt(this.getAttribute('pageSize') || '15'))
+    const [pageSize] = createSignal(parseInt(this.getAttribute('pageSize') || '50'))
     const [title] = createSignal(this.getAttribute('title') || '')
-    const [theme, setTheme] = createSignal(this.getAttribute('theme') || '')
-    // Crear signals reactivos que se actualicen cuando cambien los atributos
     const [selectable, setSelectable] = createSignal(this.hasAttribute('selectable'))
     const [pageable, setPageable] = createSignal(this.hasAttribute('pageable'))
     const [filterable, setFilterable] = createSignal(this.hasAttribute('filterable'))
     const [actionable, setActionable] = createSignal(this.hasAttribute('actionable'))
+
+    // Raw filter value (immediate from input), debounced filter (used for computation)
+    const [rawFilter, setRawFilter] = createSignal('')
+    const [filter, setFilter] = createSignal('')
+    const [sortKey, setSortKey] = createSignal<string | null>(null)
+    const [sortDir, setSortDir] = createSignal(1)
+    const [page, setPage] = createSignal(0)
+    const [selectedRow, setSelectedRow] = createSignal<any>(null)
+
+    // Debounce filter: waits 300ms after last keystroke before updating computation
+    const onFilterInput = (e: Event) => {
+      const val = (e.target as HTMLInputElement).value
+      setRawFilter(val)
+      clearTimeout(this._filterTimer)
+      this._filterTimer = setTimeout(() => {
+        setFilter(val)
+        setPage(0)
+      }, 300)
+    }
 
     // Observer para cambios de atributos
     const observer = new MutationObserver((mutations) => {
@@ -34,47 +52,49 @@ class AsDatagrid extends HTMLElement {
           if (attrName === 'pageable') setPageable(this.hasAttribute('pageable'))
           if (attrName === 'filterable') setFilterable(this.hasAttribute('filterable'))
           if (attrName === 'actionable') setActionable(this.hasAttribute('actionable'))
-          if (attrName === 'theme') setTheme(this.getAttribute('theme') || '')
         }
       })
     })
     observer.observe(this, { attributes: true })
-    const [filter, setFilter] = createSignal('')
-    const [sortKey, setSortKey] = createSignal<string | null>(null)
-    const [sortDir, setSortDir] = createSignal(1)
-    const [page, setPage] = createSignal(0)
-    const [selectedRow, setSelectedRow] = createSignal<any>(null)
 
-    const getFilteredData = () => {
-      if (!filter()) return data()
+    // ── Memoized data pipeline ──────────────────────────────────
+    // Only re-execute each step when its direct dependencies change.
+
+    const filteredData = createMemo(() => {
       const f = filter().toLowerCase()
-      return data().filter(row => 
+      if (!f) return data()
+      return data().filter(row =>
         Object.values(row).some(v => String(v).toLowerCase().includes(f))
       )
-    }
+    })
 
-    const getSortedData = () => {
-      const filtered = getFilteredData()
-      if (!sortKey()) return filtered
-      return [...filtered].sort((a, b) => {
-        const key = sortKey()
-        if (!key) return 0
+    const sortedData = createMemo(() => {
+      const d = filteredData()
+      const key = sortKey()
+      if (!key) return d
+      const dir = sortDir()
+      return [...d].sort((a, b) => {
         const av = a[key]
         const bv = b[key]
-        return av < bv ? -sortDir() : av > bv ? sortDir() : 0
+        return av < bv ? -dir : av > bv ? dir : 0
       })
-    }
+    })
 
-    const getPaginatedData = () => {
-      const sorted = getSortedData()
-      if (!pageable()) return sorted
+    const paginatedData = createMemo(() => {
+      if (!pageable()) return sortedData()
       const start = page() * pageSize()
-      return sorted.slice(start, start + pageSize())
-    }
+      return sortedData().slice(start, start + pageSize())
+    })
+
+    const total = createMemo(() => sortedData().length)
+    const pages = createMemo(() => Math.ceil(total() / pageSize()))
+    const rows = createMemo(() => paginatedData())
+
+    // ── Actions ─────────────────────────────────────────────────
 
     const sort = (key: string) => {
       if (sortKey() === key) {
-        setSortDir(sortDir() === 1 ? -1 : 1)
+        setSortDir(d => d === 1 ? -1 : 1)
       } else {
         setSortKey(key)
         setSortDir(1)
@@ -83,41 +103,44 @@ class AsDatagrid extends HTMLElement {
 
     const selectRow = (row: any) => {
       if (!selectable()) return
-      setSelectedRow(row)
       this.dispatchEvent(new CustomEvent('row-select', {
-        detail: { row, id: row.id },
+        detail: { row, id: row?.id },
         bubbles: true,
         composed: true
       }))
     }
 
-    const rows = () => getPaginatedData()
-    const total = () => getSortedData().length
-    const pages = () => Math.ceil(total() / pageSize())
+    // ── Exposed setters ─────────────────────────────────────────
 
-    // Exponer métodos para actualizar data y columns
     ;(this as any).updateData = (newData: any[]) => {
       this._data = newData
       setData(newData)
+      setPage(0)
+      setFilter('')
+      setRawFilter('')
     }
     ;(this as any).updateColumns = (newColumns: Column[]) => {
       this._columns = newColumns
       setColumns(newColumns)
     }
 
+    // ── Component ───────────────────────────────────────────────
+
     const Component = () => (
       <>
         <style>{`
-          :host {
-            display: block;
-          }
+          :host { display: block; }
           .container {
-            background: ${theme() === 'dark' ? '#1f2937' : 'white'};
             border-radius: 0.5rem;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);
             overflow: hidden;
-            color: ${theme() === 'dark' ? '#f3f4f6' : '#1f2937'};
+            background: #ffffff;
+            color: #1f2937;
             font-family: -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", Helvetica, Arial, sans-serif;
+          }
+          :host([theme="dark"]) .container {
+            background: #1f2937;
+            color: #f3f4f6;
           }
           .header {
             padding: 1rem 1.5rem;
@@ -135,19 +158,23 @@ class AsDatagrid extends HTMLElement {
             border: none;
             border-radius: 4px;
             font-size: 0.9375rem;
-            background: ${theme() === 'dark' ? '#374151' : '#f5f5f5'};
-            color: ${theme() === 'dark' ? '#f3f4f6' : '#1f2937'};
             outline: none;
+            background: #f5f5f5;
+            color: #1f2937;
           }
-          .table-wrapper {
-            overflow-x: auto;
+          :host([theme="dark"]) .filter-input {
+            background: #374151;
+            color: #f3f4f6;
           }
-          table {
-            width: 100%;
-          }
+          .table-wrapper { overflow-x: auto; }
+          table { width: 100%; border-collapse: collapse; }
           thead {
-            background-color: ${theme() === 'dark' ? '#111827' : '#f9fafb'};
-            border-bottom: 1px solid ${theme() === 'dark' ? '#374151' : '#e5e7eb'};
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+          }
+          :host([theme="dark"]) thead {
+            background: #111827;
+            border-bottom-color: #374151;
           }
           th {
             padding: 0.5rem 0.25rem;
@@ -158,89 +185,68 @@ class AsDatagrid extends HTMLElement {
             letter-spacing: 0.05em;
             cursor: pointer;
             user-select: none;
-            opacity: 0.7;
-          }
-          tbody tr {
-            border-bottom: 1px solid ${theme() === 'dark' ? '#374151' : '#e5e7eb'};
-            transition: background-color 0.15s;
-          }
-          tbody tr:nth-child(even) {
-            background-color: ${theme() === 'dark' ? '#111827' : '#f9fafb'};
-          }
-          tbody tr:hover {
-            background-color: ${theme() === 'dark' ? '#1e3a5f' : '#e0f2fe'};
-          }
-          tbody tr.selectable {
-            cursor: pointer;
-          }
-          tbody tr.selectable:hover {
-            background-color: ${theme() === 'dark' ? '#1e3a5f' : '#e0f2fe'} !important;
-          }
-          tbody tr.selected {
-            background-color: ${theme() === 'dark' ? '#1d4ed8' : '#dbeafe'} !important;
-          }
-          td.first-col {
-            border-left: 3px solid transparent;
-          }
-          tbody tr.selected td.first-col {
-            border-left-color: #1676f3;
-          }
-          th.action-col {
-            width: 0.5rem;
-            text-align: center;
-            cursor: default;
-            padding: 0;
-          }
-          td.action-col {
-            width: 0.5rem;
-            text-align: center;
-            padding: 0;
-          }
-          .action-btn {
-            background: transparent;
-            border: none;
-            color: ${theme() === 'dark' ? '#f3f4f6' : '#1f2937'};
-            cursor: pointer;
-            font-size: 1.25rem;
-            padding: 0;
-            border-radius: 4px;
-            line-height: 1;
           }
           td {
             padding: 0.5rem 0.25rem;
             font-size: 0.9375rem;
+            border-bottom: 1px solid #e5e7eb;
           }
+          :host([theme="dark"]) td {
+            border-bottom-color: #374151;
+          }
+          tbody tr:nth-child(even) { background: #f9fafb; }
+          :host([theme="dark"]) tbody tr:nth-child(even) { background: #111827; }
+          tbody tr:hover { background: #e0f2fe; }
+          :host([theme="dark"]) tbody tr:hover { background: #1e3a5f; }
+          tbody tr.selectable { cursor: pointer; }
+          tbody tr.selected { background: #dbeafe !important; }
+          :host([theme="dark"]) tbody tr.selected { background: #1d4ed8 !important; }
+          td.first-col { border-left: 3px solid transparent; }
+          tbody tr.selected td.first-col { border-left-color: #1676f3; }
+          th.action-col, td.action-col { width: 0.5rem; text-align: center; padding: 0; }
+          .action-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1.25rem;
+            padding: 0 0.25rem;
+            border-radius: 4px;
+            line-height: 1;
+            color: #1f2937;
+          }
+          :host([theme="dark"]) .action-btn { color: #f3f4f6; }
+          .action-btn:hover { background: rgba(0,0,0,0.08); }
+          :host([theme="dark"]) .action-btn:hover { background: rgba(255,255,255,0.12); }
           .pagination {
             padding: 0.6rem 0.5rem;
-            border-top: 1px solid ${theme() === 'dark' ? '#374151' : '#e5e7eb'};
+            border-top: 1px solid #e5e7eb;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-size: 0.875rem;
           }
-          .pagination-controls {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-          }
-          button {
+          :host([theme="dark"]) .pagination { border-top-color: #374151; }
+          .pagination-controls { display: flex; gap: 0.5rem; align-items: center; }
+          .page-btn {
             padding: 0.5rem 1rem;
-            border: 1px solid ${theme() === 'dark' ? '#4b5563' : '#d1d5db'};
+            border: 1px solid #d1d5db;
             border-radius: 4px;
-            background: ${theme() === 'dark' ? '#374151' : 'white'};
-            color: ${theme() === 'dark' ? '#f3f4f6' : '#1f2937'};
+            background: #ffffff;
+            color: #1f2937;
             cursor: pointer;
             font-family: inherit;
             font-size: 0.875rem;
           }
-          button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+          :host([theme="dark"]) .page-btn {
+            border-color: #4b5563;
+            background: #374151;
+            color: #f3f4f6;
           }
-          button:hover:not(:disabled) {
-            background: ${theme() === 'dark' ? '#4b5563' : '#f3f4f6'};
-          }
+          .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+          .page-btn:hover:not(:disabled) { background: #f3f4f6; }
+          :host([theme="dark"]) .page-btn:hover:not(:disabled) { background: #4b5563; }
         `}</style>
+
         <div class="container">
           {(title() || filterable()) && (
             <div class="header">
@@ -250,8 +256,8 @@ class AsDatagrid extends HTMLElement {
                   type="text"
                   class="filter-input"
                   placeholder="🔍"
-                  value={filter()}
-                  onInput={(e) => { setFilter(e.target.value); setPage(0) }}
+                  value={rawFilter()}
+                  onInput={onFilterInput}
                 />
               )}
             </div>
@@ -275,9 +281,9 @@ class AsDatagrid extends HTMLElement {
               <tbody>
                 <For each={rows()}>
                   {(row) => (
-                    <tr 
+                    <tr
                       class={`${selectable() ? 'selectable' : ''} ${selectedRow() === row ? 'selected' : ''}`}
-                      onClick={() => selectRow(row)}
+                      onClick={() => { selectRow(row); setSelectedRow(row) }}
                     >
                       <For each={columns()}>
                         {(col, idx) => <td class={idx() === 0 ? 'first-col' : ''}>{row[col.key]}</td>}
@@ -286,11 +292,8 @@ class AsDatagrid extends HTMLElement {
                         <td class="action-col">
                           <button class="action-btn" onClick={(e) => {
                             e.stopPropagation()
-                            if (selectable()) {
-                              setSelectedRow(row)
-                            }
                             this.dispatchEvent(new CustomEvent('row-action', {
-                              detail: { row, id: row.id, event: e },
+                              detail: { row, id: row?.id, event: e },
                               bubbles: true,
                               composed: true
                             }))
@@ -308,19 +311,15 @@ class AsDatagrid extends HTMLElement {
             <div class="pagination">
               <div># {total()}</div>
               <div class="pagination-controls">
-                <button 
+                <button class="page-btn"
                   onClick={() => setPage(page() - 1)}
                   disabled={page() === 0}
-                >
-                  &lt;
-                </button>
+                >&lt;</button>
                 <span>{page() + 1} / {pages()}</span>
-                <button 
+                <button class="page-btn"
                   onClick={() => setPage(page() + 1)}
                   disabled={page() >= pages() - 1}
-                >
-                  &gt;
-                </button>
+                >&gt;</button>
               </div>
             </div>
           )}
@@ -338,10 +337,7 @@ class AsDatagrid extends HTMLElement {
   disconnectedCallback() {
     this.dispose?.()
     this.themeCleanup?.()
-    // Limpiar observer
-    if ((this as any).observer) {
-      (this as any).observer.disconnect()
-    }
+    clearTimeout(this._filterTimer)
   }
 
   set data(value: any[]) {
@@ -363,27 +359,19 @@ class AsDatagrid extends HTMLElement {
   }
 
   set selectable(value: boolean) {
-    if (value) {
-      this.setAttribute('selectable', '')
-    } else {
-      this.removeAttribute('selectable')
-    }
+    value ? this.setAttribute('selectable', '') : this.removeAttribute('selectable')
   }
 
   set filterable(value: boolean) {
-    if (value) {
-      this.setAttribute('filterable', '')
-    } else {
-      this.removeAttribute('filterable')
-    }
+    value ? this.setAttribute('filterable', '') : this.removeAttribute('filterable')
   }
 
   set pageable(value: boolean) {
-    if (value) {
-      this.setAttribute('pageable', '')
-    } else {
-      this.removeAttribute('pageable')
-    }
+    value ? this.setAttribute('pageable', '') : this.removeAttribute('pageable')
+  }
+
+  static get observedAttributes() {
+    return ['selectable', 'pageable', 'filterable', 'actionable', 'theme', 'pageSize']
   }
 }
 

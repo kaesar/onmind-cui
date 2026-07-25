@@ -174,24 +174,29 @@ class AsTime extends HTMLElement {
             color: #f3f4f6;
           }
           :host([theme="dark"]) .dropdown {
-            background: #262626;
-            border-color: #525252;
+            background: #1f2937;
+            border-color: #4b5563;
           }
           :host([theme="dark"]) .time-display {
-            color: #e5e5e5;
-            border-bottom-color: #525252;
+            color: #f3f4f6;
+            border-bottom-color: #4b5563;
           }
           :host([theme="dark"]) .column {
-            border-right-color: #525252;
+            border-right-color: #4b5563;
           }
           :host([theme="dark"]) .option {
-            color: #e5e5e5;
+            color: #e5e7eb;
           }
           :host([theme="dark"]) .option:hover {
-            background: #404040;
+            background: #374151;
           }
           :host([theme="dark"]) .option.selected {
             background: #1e3a5f;
+            color: #60a5fa;
+          }
+          :host([theme="dark"]) .period-column .option.selected {
+            background: #3b82f6;
+            color: #ffffff;
           }
         `}</style>
         <div class="field">
