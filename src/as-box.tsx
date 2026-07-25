@@ -1,7 +1,9 @@
 import { render } from 'solid-js/web'
+import { createThemeSync } from './theme-sync'
 
 class AsBox extends HTMLElement {
   private dispose?: () => void
+  private themeCleanup?: () => void
   private boxEl?: HTMLDivElement
 
   private applyStyles() {
@@ -79,10 +81,14 @@ class AsBox extends HTMLElement {
     `
     shadowRoot.appendChild(style)
     this.dispose = render(Component, shadowRoot)
+
+    // Sync with VitePress global theme
+    this.themeCleanup = createThemeSync(this)
   }
 
   disconnectedCallback() {
     this.dispose?.()
+    this.themeCleanup?.()
   }
 
   /* Respond to attribute changes directly — no infinite loop */

@@ -1,5 +1,6 @@
 import { render } from 'solid-js/web'
 import { createSignal, For, createMemo } from 'solid-js'
+import { createThemeSync } from './theme-sync'
 
 interface CardItem {
   title?: string
@@ -14,6 +15,7 @@ interface CardItem {
 
 class AsIndex extends HTMLElement {
   private dispose?: () => void
+  private themeCleanup?: () => void
   private _items: CardItem[] = []
   private _setItems?: (val: CardItem[]) => void
 
@@ -334,12 +336,16 @@ class AsIndex extends HTMLElement {
     const shadowRoot = this.attachShadow({ mode: 'open' })
     this.dispose = render(Component, shadowRoot)
 
+    // Sync with VitePress global theme
+    this.themeCleanup = createThemeSync(this)
+
     // Auto-fetch if src attribute is present
     fetchSrc()
   }
 
   disconnectedCallback() {
     this.dispose?.()
+    this.themeCleanup?.()
   }
 
   set items(val: CardItem[]) {

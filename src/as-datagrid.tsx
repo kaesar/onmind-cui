@@ -1,5 +1,6 @@
 import { render } from 'solid-js/web'
 import { createSignal, For } from 'solid-js'
+import { createThemeSync } from './theme-sync'
 
 interface Column {
   key: string
@@ -8,6 +9,7 @@ interface Column {
 
 class AsDatagrid extends HTMLElement {
   private dispose?: () => void
+  private themeCleanup?: () => void
   private _data: any[] = []
   private _columns: Column[] = []
 
@@ -328,10 +330,14 @@ class AsDatagrid extends HTMLElement {
 
     const shadowRoot = this.attachShadow({ mode: 'open' })
     this.dispose = render(Component, shadowRoot)
+
+    // Sync with VitePress global theme
+    this.themeCleanup = createThemeSync(this)
   }
 
   disconnectedCallback() {
     this.dispose?.()
+    this.themeCleanup?.()
     // Limpiar observer
     if ((this as any).observer) {
       (this as any).observer.disconnect()

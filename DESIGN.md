@@ -316,6 +316,8 @@ Modal dialog with slot for content.
 
 **Slots:** Default slot for form/content
 
+**Theme Sync:** Uses `createThemeSync(this)` in `connectedCallback` to automatically sync with global theme (VitePress/Astro/system). Propagates theme to slotted content.
+
 ---
 
 ### Data Display Components
@@ -547,9 +549,11 @@ Card index with filtering and tag-based search. Displays a grid of linked cards.
 #### `as-confirm`
 Confirm dialog triggered by button.
 
-**Attributes:** `label`, `link`, `message`
+**Attributes:** `label`, `link`, `message`, `theme` (light|dark)
 
 **Behavior:** Clicking button shows modal with confirm/cancel. On confirm: navigates to `link` OR dispatches `confirm-tap` OR shows `message` toast.
+
+**Theme support:** Full dark/light theme support. Uses global theme sync via `createThemeSync` — automatically reacts to VitePress/Astro/system theme changes.
 
 #### `as-event`
 Button-like input that dispatches custom event (for triggering popups/modals).
@@ -730,6 +734,62 @@ createFormFieldAttributes({
 | `createStandardAttributes(attrs)` | Most components - handles string, boolean, and theme attributes |
 | `createFormFieldAttributes(attrs)` | Form inputs - pre-configures common form attributes with types |
 | `createAttributeObserver(configs, options)` | Low-level - full control over each attribute's behavior |
+| `createThemeSync(element, options?)` | **Global theme sync** - syncs component theme with VitePress/Astro/system dark mode |
+| `createThemeSyncWithLocalOverride(element, onThemeChange?, options?)` | Same as above + observes local `theme` attribute for explicit overrides |
+
+### Global Theme Synchronization (`createThemeSync`)
+
+To make a component automatically react to global theme changes (VitePress `.dark` class on `<html>`, Astro `data-theme`, or system `prefers-color-scheme`), call `createThemeSync` in `connectedCallback`:
+
+```typescript
+import { createThemeSync } from './theme-sync'
+
+class AsMyComponent extends HTMLElement {
+  private vpThemeCleanup?: () => void
+
+  connectedCallback() {
+    // Sync component's 'theme' attribute with global dark/light mode
+    this.vpThemeCleanup = createThemeSync(this)
+    
+    // ... rest of component
+  }
+
+  disconnectedCallback() {
+    this.vpThemeCleanup?.()  // Required cleanup
+  }
+}
+```
+
+**Options:**
+
+```typescript
+createThemeSync(element, {
+  syncClass: 'dark',              // Class to watch on targetElement (default: 'dark')
+  targetElement: document.documentElement, // Element to observe (default: <html>)
+  themeAttribute: 'theme',        // Attribute to set on component (default: 'theme')
+  lightValue: 'light',            // Value for light theme (default: 'light')
+  darkValue: 'dark',              // Value for dark theme (default: 'dark')
+  respectSystemPreference: true   // Fallback to prefers-color-scheme (default: true)
+})
+```
+
+**Local override:** If a component should also accept an explicit `theme` attribute override (in addition to global sync), use `createThemeSyncWithLocalOverride`:
+
+```typescript
+this.vpThemeCleanup = createThemeSyncWithLocalOverride(this, (theme) => {
+  console.log('Theme changed to:', theme) // 'light' | 'dark'
+})
+```
+
+**Components using global sync:** `as-index`, `as-box`, `as-datagrid`, `as-form`, `as-modal`, `as-confirm`.
+
+**API Reference:**
+
+| Function | Use Case |
+|----------|----------|
+| `createStandardAttributes(attrs)` | Most components - handles string, boolean, and theme attributes |
+| `createFormFieldAttributes(attrs)` | Form inputs - pre-configures common form attributes with types |
+| `createAttributeObserver(configs, options)` | Low-level - full control over each attribute's behavior |
 
 ### Component Checklist
 
@@ -737,9 +797,10 @@ When adding a new component, verify:
 
 - [ ] `src/as-new-component.tsx` implements component with Shadow DOM
 - [ ] Uses `createStandardAttributes` or `createFormFieldAttributes` for attribute sync
+- [ ] Uses `createThemeSync` (or `createThemeSyncWithLocalOverride`) for global theme sync
 - [ ] Supports `theme="light|dark"` attribute
 - [ ] Dispatches standard events (`value-changed`, `checked-changed`, etc.)
-- [ ] Cleans up in `disconnectedCallback()` (`this.dispose?.()`)
+- [ ] Cleans up in `disconnectedCallback()` (`this.dispose?.()`, `this.vpThemeCleanup?.()`)
 - [ ] Declares `static get observedAttributes()`
 - [ ] Exported in `src/index-solid.ts`
 - [ ] Added to `src/vite-env.d.ts` (JSX IntrinsicElements)

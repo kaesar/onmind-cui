@@ -1,15 +1,20 @@
 import { render } from 'solid-js/web'
 import { createSignal, For } from 'solid-js'
+import { createThemeSync } from './theme-sync'
 
 class AsForm extends HTMLElement {
   private dispose?: () => void
+  private themeCleanup?: () => void
   private _schema: any = {}
   private _hideTitle = false
   private _handleKeyDown?: (e: KeyboardEvent) => void
 
   connectedCallback() {
+    // Sync with VitePress global theme
+    this.themeCleanup = createThemeSync(this)
+    
     const [schema, setSchema] = createSignal(this._schema)
-    const [theme] = createSignal((this.getAttribute('theme') as 'light' | 'dark') || undefined)
+    const [theme] = createSignal('light')
     const [successMessage] = createSignal(this.getAttribute('successMessage') || '')
     const [hideTitle, setHideTitle] = createSignal(this._hideTitle || this.hasAttribute('hideTitle'))
     const [formData, setFormData] = createSignal<any>({})
@@ -412,6 +417,7 @@ class AsForm extends HTMLElement {
 
   disconnectedCallback() {
     this.dispose?.()
+    this.themeCleanup?.()
     if (this._handleKeyDown) {
       document.removeEventListener('keydown', this._handleKeyDown)
     }

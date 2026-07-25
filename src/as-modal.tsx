@@ -1,11 +1,16 @@
 import { render } from 'solid-js/web'
 import { createSignal } from 'solid-js'
+import { createThemeSync } from './theme-sync'
 
 class AsModal extends HTMLElement {
   private dispose?: () => void
+  private themeCleanup?: () => void
   private _observer?: MutationObserver
 
   connectedCallback() {
+    // Sync with global theme (VitePress/Astro/system)
+    this.themeCleanup = createThemeSync(this)
+    
     const [title, setTitle] = createSignal(this.getAttribute('title') || '')
     const [open, setOpen] = createSignal(false)
     const [theme, setTheme] = createSignal(this.getAttribute('theme') || '')
@@ -196,6 +201,7 @@ class AsModal extends HTMLElement {
 
   disconnectedCallback() {
     this.dispose?.()
+    this.themeCleanup?.()
     this._observer?.disconnect()
   }
 

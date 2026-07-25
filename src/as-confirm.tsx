@@ -1,15 +1,21 @@
 import { render } from 'solid-js/web'
 import { createSignal } from 'solid-js'
+import { createThemeSync } from './theme-sync'
 
 class AsConfirm extends HTMLElement {
   private dispose?: () => void
+  private themeCleanup?: () => void
   private _observer?: MutationObserver
 
   connectedCallback() {
+    // Sync with global theme (VitePress/Astro/system)
+    this.themeCleanup = createThemeSync(this)
+    
     const [label, setLabel] = createSignal(this.getAttribute('label') || 'Oops!')
     const [link, setLink] = createSignal(this.getAttribute('link') || '')
     const [message, setMessage] = createSignal(this.getAttribute('message') || '')
     const [dialogOpened, setDialogOpened] = createSignal(false)
+    const [theme, setTheme] = createSignal(this.getAttribute('theme') || '')
 
     const open = () => setDialogOpened(true)
     const close = () => setDialogOpened(false)
@@ -34,6 +40,7 @@ class AsConfirm extends HTMLElement {
           if (attrName === 'label') setLabel(this.getAttribute('label') || 'Oops!')
           if (attrName === 'link') setLink(this.getAttribute('link') || '')
           if (attrName === 'message') setMessage(this.getAttribute('message') || '')
+          if (attrName === 'theme') setTheme(this.getAttribute('theme') || '')
         }
       })
     })
@@ -71,23 +78,24 @@ class AsConfirm extends HTMLElement {
             z-index: 9999;
           }
           .dialog {
-            background: white;
+            background: ${theme() === 'dark' ? '#1f2937' : 'white'};
             border-radius: 8px;
             padding: 1.5rem;
             min-width: 300px;
             max-width: 500px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             font-family: -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", Helvetica, Arial, sans-serif;
+            color: ${theme() === 'dark' ? '#f3f4f6' : '#1f2937'};
           }
           .dialog-header {
             font-size: 1.125rem;
             font-weight: 600;
             margin-bottom: 1rem;
-            color: #1f2937;
+            color: ${theme() === 'dark' ? '#f3f4f6' : '#1f2937'};
           }
           .dialog-content {
             margin-bottom: 1.5rem;
-            color: #4b5563;
+            color: ${theme() === 'dark' ? '#d1d5db' : '#4b5563'};
             font-size: 0.9375rem;
           }
           .dialog-actions {
@@ -96,11 +104,11 @@ class AsConfirm extends HTMLElement {
             justify-content: flex-end;
           }
           .btn-cancel {
-            background: #e5e7eb;
-            color: #1f2937;
+            background: ${theme() === 'dark' ? '#374151' : '#e5e7eb'};
+            color: ${theme() === 'dark' ? '#f3f4f6' : '#1f2937'};
           }
           .btn-cancel:hover {
-            background: #d1d5db;
+            background: ${theme() === 'dark' ? '#4b5563' : '#d1d5db'};
           }
           .btn-confirm {
             background: #ef4444;
@@ -131,11 +139,12 @@ class AsConfirm extends HTMLElement {
 
   disconnectedCallback() {
     this.dispose?.()
+    this.themeCleanup?.()
     this._observer?.disconnect()
   }
 
   static get observedAttributes() {
-    return ['label', 'link', 'message']
+    return ['label', 'link', 'message', 'theme']
   }
 }
 

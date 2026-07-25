@@ -31,6 +31,14 @@ Componentes incluidos (nombres de etiqueta):
 
 > `as-event` es útil cuando necesitas un campo que dispare una acción personalizada (abrir modal, diálogo de archivos, etc.) en lugar de mostrar un `dropdown` (`select`)
 
+Si agrupamos estos componentes, tendríamos los siguientes enfoques o categorías:
+
+- **Formularios**: `as-form`, `as-input`, `as-select`, `as-checkbox`, `as-switch`, `as-date`, `as-time`, `as-complete`, `as-upload`, `as-radio`, `as-text`
+- **Interacción**: `as-button`, `as-confirm`, `as-modal`, `as-event`, `as-popup`
+- **Disposición**: `as-box`, , `as-form`
+- **Datos**: `as-index`, `as-datagrid`
+- **Contenido**: `as-image`, `as-video`, `as-embed`
+
 ## Modo de uso desde HTML estático (configuración simple)
 
 Solo incluye el CSS y el script que registra los componentes. Ejemplo mínimo:
@@ -449,7 +457,58 @@ Si necesitas agregar nuevos componentes al sistema CUI, consulta **DESIGN.md** q
 
 - **Patrón base** de componentes con SolidJS + Shadow DOM
 - **Utilidad centralizada** `attribute-observer.ts` para sincronizar atributos ↔ signals
+- **Sincronización de tema global** con `createThemeSync` (VitePress/Astro/sistema)
 - **Checklist obligatorio** para nuevos componentes:
+  - `src/as-new-component.tsx` - Implementación
+  - `src/index-solid.ts` - Exportación
+  - `src/vite-env.d.ts` - Tipos JSX IntrinsicElements
+  - `src/custom-elements.d.ts` - Tipos TypeScript completos
+  - `index.html` - Demo
+  - `README.md` - Tabla de componentes
+
+### Sincronización de Tema Global (`createThemeSync`)
+
+Para que un componente reaccione automáticamente al cambio de tema global (VitePress `dark` class en `<html>`, Astro `data-theme`, o `prefers-color-scheme`), usa la utilidad `createThemeSync` en `connectedCallback`:
+
+```typescript
+import { createThemeSync } from './theme-sync'
+
+connectedCallback() {
+  // Sincroniza el atributo 'theme' del componente con el tema global
+  this.vpThemeCleanup = createThemeSync(this)
+  
+  // ... resto del código
+}
+
+disconnectedCallback() {
+  this.vpThemeCleanup?.()  // Limpieza obligatoria
+}
+```
+
+**Opciones de configuración:**
+
+```typescript
+createThemeSync(element, {
+  syncClass: 'dark',              // Clase a observar en <html> (default: 'dark')
+  targetElement: document.documentElement, // Elemento a observar (default: <html>)
+  themeAttribute: 'theme',        // Atributo a setear en el componente (default: 'theme')
+  lightValue: 'light',            // Valor para tema claro (default: 'light')
+  darkValue: 'dark',              // Valor para tema oscuro (default: 'dark')
+  respectSystemPreference: true   // Fallback a prefers-color-scheme (default: true)
+})
+```
+
+**Override local:** Si un componente necesita aceptar override explícito vía atributo `theme` además del tema global, usa `createThemeSyncWithLocalOverride`:
+
+```typescript
+this.vpThemeCleanup = createThemeSyncWithLocalOverride(this, (theme) => {
+  console.log('Tema cambió a:', theme) // 'light' | 'dark'
+})
+```
+
+**Componentes que ya usan sync global:** `as-index`, `as-box`, `as-datagrid`, `as-form`, `as-modal`, `as-confirm`.
+
+**Checklist obligatorio** para nuevos componentes:
   - `src/as-new-component.tsx` - Implementación
   - `src/index-solid.ts` - Exportación
   - `src/vite-env.d.ts` - Tipos JSX IntrinsicElements
@@ -461,7 +520,7 @@ Si necesitas agregar nuevos componentes al sistema CUI, consulta **DESIGN.md** q
 
 | Archivo | Qué agregar |
 |---------|-------------|
-| `src/as-new-component.tsx` | Clase del componente con `createStandardAttributes` |
+| `src/as-new-component.tsx` | Clase del componente con `createStandardAttributes` / `createFormFieldAttributes` y `createThemeSync` |
 | `src/index-solid.ts` | `import './as-new-component'` |
 | `src/vite-env.d.ts` | `'as-new-component': { prop?: string }` en `JSX.IntrinsicElements` |
 | `src/custom-elements.d.ts` | Tipos completos con eventos en `JSX.IntrinsicElements` |
