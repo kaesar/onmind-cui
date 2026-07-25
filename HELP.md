@@ -6,28 +6,28 @@ Conjunto selecto de componentes web como Web Components (custom elements) basado
 
 Componentes incluidos (nombres de etiqueta):
 
-- `as-complete`
-- `as-box`
-- `as-button`
-- `as-cards`
-- `as-check`
-- `as-confirm`
-- `as-datagrid`
-- `as-date`
-- `as-embed`
-- `as-event`
-- `as-form`
-- `as-image`
-- `as-input`
-- `as-modal`
-- `as-popup`
-- `as-radio`
-- `as-select`
-- `as-switch`
-- `as-text`
-- `as-time`
-- `as-upload`
-- `as-video`
+- `as-complete`: autopletado
+- `as-box`: segmento o caja
+- `as-button`: botón
+- `as-index`: índice de tarjetas
+- `as-check`: casilla de verificación
+- `as-confirm`: modal de confirmación
+- `as-datagrid`: cuadricula de datos
+- `as-date`: entrada con calendario
+- `as-embed`: objeto embebido (ejemplo: Genialy, url)
+- `as-event`: entrada para lanzar envento (ejemplo: modal)
+- `as-form`: formulario
+- `as-image`: imagen
+- `as-input`: entrada de texto
+- `as-modal`: modal
+- `as-popup`: popup
+- `as-radio`: opciones
+- `as-select`: entrada de selección o lista
+- `as-switch`: switch
+- `as-text`: entrada de area de texto
+- `as-time`: entrada con hora
+- `as-upload`: subida de archivo
+- `as-video`: video (YouTube)
 
 > `as-event` es útil cuando necesitas un campo que dispare una acción personalizada (abrir modal, diálogo de archivos, etc.) en lugar de mostrar un `dropdown` (`select`)
 

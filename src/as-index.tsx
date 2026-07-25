@@ -7,14 +7,23 @@ interface CardItem {
   description?: string
   url?: string
   tags?: string[]
+  language?: string
   hide?: boolean
   [key: string]: any
 }
 
-class AsCards extends HTMLElement {
+class AsIndex extends HTMLElement {
   private dispose?: () => void
   private _items: CardItem[] = []
   private _setItems?: (val: CardItem[]) => void
+
+  currentLang() {
+    const langAttr = this.getAttribute('lang')
+    if (langAttr) return langAttr
+    const seg = location.pathname.split('/').filter(Boolean)
+    const lang = seg.find(s => ['en', 'es'].includes(s))
+    return lang || null
+  }
 
   connectedCallback() {
     const [title, setTitle] = createSignal(this.getAttribute('title') || '')
@@ -52,15 +61,16 @@ class AsCards extends HTMLElement {
       try {
         const res = await fetch(url)
         const data = await res.json()
+        const lang = this.currentLang()
         const list = (Array.isArray(data) ? data : [])
-          .filter((e: CardItem) => !e.hide)
+          .filter((e: CardItem) => !e.hide && (!lang || !e.language || e.language === lang))
           .sort((a: CardItem, b: CardItem) =>
             (a.title || a.name || '').localeCompare(b.title || b.name || '')
           )
         this._items = list
         setItems(list)
       } catch (err) {
-        console.error('as-cards fetch error:', err)
+        console.error('as-index fetch error:', err)
       } finally {
         setLoading(false)
       }
@@ -79,6 +89,7 @@ class AsCards extends HTMLElement {
           if (attr === 'title') setTitle(this.getAttribute('title') || '')
           if (attr === 'src') { setSrc(this.getAttribute('src') || ''); fetchSrc() }
           if (attr === 'filtering') setFiltering(this.hasAttribute('filtering'))
+          if (attr === 'lang') fetchSrc()
         }
       })
     })
@@ -341,8 +352,8 @@ class AsCards extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['title', 'src', 'filtering', 'theme']
+    return ['title', 'src', 'filtering', 'theme', 'lang']
   }
 }
 
-customElements.define('as-cards', AsCards)
+customElements.define('as-index', AsIndex)

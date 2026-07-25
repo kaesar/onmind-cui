@@ -23,9 +23,9 @@ Inspired by Vaadin's approach where input fields maintain a light, readable surf
 | Element | Style (light & dark) | Reason |
 |---------|----------------------|--------|
 | Input / textarea / trigger | `background: #e8eaed`, `color: #1a1a1a` | High contrast, clean readability |
-| Label | Reacts to theme (`#374151` light, `#f3f4f6` dark) | Respects surrounding context |
-| SVG icon / chevron | Always `#1f2937` (dark) | Maximum contrast on light surface |
-| Placeholder | Always `#737373` | Independent of theme |
+| Label | Reacts to theme (`#374151` <span style="color: #374151">&block;&block;&block;&block;</span> dark) | Respects surrounding context |
+| SVG icon / chevron | Always `#1f2937` <span style="color: #1f2937">&block;&block;&block;&block;</span> (dark) | Maximum contrast on light surface |
+| Placeholder | Always `#737373` <span style="color: #737373">&block;&block;&block;&block;</span> | Independent of theme |
 | Dropdown / overlay | Adapts to theme | Overlays are contextual |
 
 **Only the label, dropdowns, and overlays react to the theme.**  
@@ -54,25 +54,25 @@ The input surface itself stays light. This ensures consistency across form field
 
 | Token | Value | Usage |
 |-------|-------|-------|
-| `--color-primary` | `#3b82f6` | Primary buttons, focus rings, selected states |
-| `--color-primary-hover` | `#2563eb` | Primary button hover |
-| `--color-primary-active` | `#1d4ed8` | Primary button active |
-| `--color-secondary-bg` | `#e5e7eb` | Secondary buttons, input backgrounds |
-| `--color-secondary-hover` | `#d1d5db` | Secondary button hover |
-| `--color-background` | `#ffffff` | Page/card backgrounds |
-| `--color-surface` | `#f9fafb` | Elevated surfaces |
-| `--color-text-primary` | `#1f2937` | Primary text |
-| `--color-text-secondary` | `#4b5563` | Secondary text, labels |
-| `--color-text-muted` | `#9ca3af` | Placeholders, disabled text |
-| `--color-border` | `#d1d5db` | Input borders, dividers |
-| `--color-border-focus` | `#1676f3` | Focus rings |
-| `--color-error` | `#dc2626` | Error messages, destructive actions |
-| `--color-success` | `#059669` | Success messages |
-| `--color-checkbox-border` | `#d0d7de` | Checkbox borders |
-| `--color-checkbox-bg` | `#fafafa` | Checkbox background |
-| `--color-checkbox-checked` | `#1676f3` | Checked checkbox background |
-| `--color-switch-off` | `#e8eaed` | Switch off background |
-| `--color-switch-on` | `#1676f3` | Switch on background |
+| `--color-primary` | `#3b82f6` <span style="color: #3b82f6">&block;&block;&block;&block;</span> | Primary buttons, focus rings, selected states |
+| `--color-primary-hover` | `#2563eb` <span style="color: #2563eb">&block;&block;&block;&block;</span> | Primary button hover |
+| `--color-primary-active` | `#1d4ed8` <span style="color: #1d4ed8">&block;&block;&block;&block;</span> | Primary button active |
+| `--color-secondary-bg` | `#e5e7eb` <span style="color: #e5e7eb">&block;&block;&block;&block;</span> | Secondary buttons, input backgrounds |
+| `--color-secondary-hover` | `#d1d5db` <span style="color: #d1d5db">&block;&block;&block;&block;</span> | Secondary button hover |
+| `--color-background` | `#ffffff` <span style="color: #ffffff">&block;&block;&block;&block;</span> | Page/card backgrounds |
+| `--color-surface` | `#f9fafb` <span style="color: #f9fafb">&block;&block;&block;&block;</span> | Elevated surfaces |
+| `--color-text-primary` | `#1f2937` <span style="color: #1f2937">&block;&block;&block;&block;</span> | Primary text |
+| `--color-text-secondary` | `#4b5563` <span style="color: #4b5563">&block;&block;&block;&block;</span> | Secondary text, labels |
+| `--color-text-muted` | `#9ca3af` <span style="color: #9ca3af">&block;&block;&block;&block;</span> | Placeholders, disabled text |
+| `--color-border` | `#d1d5db` <span style="color: #d1d5db">&block;&block;&block;&block;</span> | Input borders, dividers |
+| `--color-border-focus` | `#1676f3` <span style="color: #1676f3">&block;&block;&block;&block;</span> | Focus rings |
+| `--color-error` | `#dc2626` <span style="color: #dc2626">&block;&block;&block;&block;</span> | Error messages, destructive actions |
+| `--color-success` | `#059669` <span style="color: #059669">&block;&block;&block;&block;</span> | Success messages |
+| `--color-checkbox-border` | `#d0d7de` <span style="color: #d0d7de">&block;&block;&block;&block;</span> | Checkbox borders |
+| `--color-checkbox-bg` | `#fafafa` <span style="color: #fafafa">&block;&block;&block;&block;</span> | Checkbox background |
+| `--color-checkbox-checked` | `#1676f3` <span style="color: #1676f3">&block;&block;&block;&block;</span> | Checked checkbox background |
+| `--color-switch-off` | `#e8eaed` <span style="color: #e8eaed">&block;&block;&block;&block;</span> | Switch off background |
+| `--color-switch-on` | `#1676f3` <span style="color: #1676f3">&block;&block;&block;&block;</span> | Switch on background |
 | `--shadow-sm` | `0 1px 3px rgba(0,0,0,0.1)` | Card shadows |
 | `--shadow-md` | `0 4px 6px rgba(0,0,0,0.1)` | Dropdown/modal shadows |
 | `--shadow-lg` | `0 10px 25px rgba(0,0,0,0.2)` | Modal overlays |
@@ -81,25 +81,25 @@ The input surface itself stays light. This ensures consistency across form field
 
 | Token | Value |
 |-------|-------|
-| `--color-primary` | `#3b82f6` |
-| `--color-primary-hover` | `#2563eb` |
-| `--color-primary-active` | `#1d4ed8` |
-| `--color-secondary-bg` | `#374151` |
-| `--color-secondary-hover` | `#4b5563` |
-| `--color-background` | `#1f2937` |
-| `--color-surface` | `#111827` |
-| `--color-text-primary` | `#f3f4f6` |
-| `--color-text-secondary` | `#d1d5db` |
-| `--color-text-muted` | `#9ca3af` |
-| `--color-border` | `#525252` |
-| `--color-border-focus` | `#1676f3` |
-| `--color-error` | `#ef4444` |
-| `--color-success` | `#10b981` |
-| `--color-checkbox-border` | `#525252` |
-| `--color-checkbox-bg` | `#374151` |
-| `--color-checkbox-checked` | `#1676f3` |
-| `--color-switch-off` | `#525252` |
-| `--color-switch-on` | `#1676f3` |
+| `--color-primary` | `#3b82f6` <span style="color: #3b82f6">&block;&block;&block;&block;</span> |
+| `--color-primary-hover` | `#2563eb` <span style="color: #2563eb">&block;&block;&block;&block;</span> |
+| `--color-primary-active` | `#1d4ed8` <span style="color: #1d4ed8">&block;&block;&block;&block;</span> |
+| `--color-secondary-bg` | `#374151` <span style="color: #374151">&block;&block;&block;&block;</span> |
+| `--color-secondary-hover` | `#4b5563` <span style="color: #4b5563">&block;&block;&block;&block;</span> |
+| `--color-background` | `#1f2937` <span style="color: #1f2937">&block;&block;&block;&block;</span> |
+| `--color-surface` | `#111827` <span style="color: #111827">&block;&block;&block;&block;</span> |
+| `--color-text-primary` | `#f3f4f6` <span style="color: #f3f4f6">&block;&block;&block;&block;</span> |
+| `--color-text-secondary` | `#d1d5db` <span style="color: #d1d5db">&block;&block;&block;&block;</span> |
+| `--color-text-muted` | `#9ca3af` <span style="color: #9ca3af">&block;&block;&block;&block;</span> |
+| `--color-border` | `#525252` <span style="color: #525252">&block;&block;&block;&block;</span> |
+| `--color-border-focus` | `#1676f3` <span style="color: #1676f3">&block;&block;&block;&block;</span> |
+| `--color-error` | `#ef4444` <span style="color: #ef4444">&block;&block;&block;&block;</span> |
+| `--color-success` | `#10b981` <span style="color: #10b981">&block;&block;&block;&block;</span> |
+| `--color-checkbox-border` | `#525252` <span style="color: #525252">&block;&block;&block;&block;</span> |
+| `--color-checkbox-bg` | `#374151` <span style="color: #374151">&block;&block;&block;&block;</span> |
+| `--color-checkbox-checked` | `#1676f3` <span style="color: #1676f3">&block;&block;&block;&block;</span> |
+| `--color-switch-off` | `#525252` <span style="color: #525252">&block;&block;&block;&block;</span> |
+| `--color-switch-on` | `#1676f3` <span style="color: #1676f3">&block;&block;&block;&block;</span> |
 | `--shadow-sm` | `0 1px 3px rgba(0,0,0,0.3)` |
 | `--shadow-md` | `0 4px 6px rgba(0,0,0,0.4)` |
 | `--shadow-lg` | `0 10px 25px rgba(0,0,0,0.5)` |
@@ -198,22 +198,22 @@ Text input with label, supporting `text`, `email`, `password`, `number` types vi
 **Events:** `value-changed` (detail: `{ value }`)
 
 **Styling:**
-- Label: 14px, 500 weight, `#374151` (light) / `#f3f4f6` (dark via `:host([theme="dark"])`)
-- Input surface: `#e8eaed` background, `#1a1a1a` text — **does not change with theme**
-- Focus border: `#1676f3`
-- Placeholder: `#737373`
+- Label: 14px, 500 weight, `#374151` <span style="color: #374151">&block;&block;&block;&block;</span> (dark via `:host([theme="dark"])`)
+- Input surface: `#e8eaed` <span style="color: #e8eaed">&block;&block;&block;&block;</span> text — **does not change with theme**
+- Focus border: `#1676f3` <span style="color: #1676f3">&block;&block;&block;&block;</span>
+- Placeholder: `#737373` <span style="color: #737373">&block;&block;&block;&block;</span>
 
 #### `as-text`
 Multi-line textarea component.
 
-**Styling:** Same input surface consistency as `as-input` — `#e8eaed` background independent of theme.
+**Styling:** Same input surface consistency as `as-input` — `#e8eaed` <span style="color: #e8eaed">&block;&block;&block;&block;</span> background independent of theme.
 
 **Attributes:** Same as `as-input` plus `rows` (default: 3)
 
 #### `as-select`
 Dropdown/select component with options format `label=Label,value=value`.
 
-**Styling:** Trigger follows surface consistency rule — `#e8eaed` background independent of theme. Chevron always `#1f2937`. Dropdown adapts to theme.
+**Styling:** Trigger follows surface consistency rule — `#e8eaed` <span style="color: #e8eaed">&block;&block;&block;&block;</span>. Dropdown adapts to theme.
 
 **Attributes:**
 
@@ -233,14 +233,14 @@ Dropdown/select component with options format `label=Label,value=value`.
 #### `as-complete`
 Autocomplete/combobox with filtering.
 
-**Styling:** Input follows surface consistency rule — `#e8eaed` background independent of theme. Dropdown adapts to theme.
+**Styling:** Input follows surface consistency rule — `#e8eaed` <span style="color: #e8eaed">&block;&block;&block;&block;</span> background independent of theme. Dropdown adapts to theme.
 
 **Attributes:** Same as `as-select` plus `placeholder` (default: `'Buscar...'`)
 
 #### `as-date`
 Date picker with calendar dropdown.
 
-**Styling:** Trigger follows surface consistency rule — `#e8eaed` background independent of theme. Calendar dropdown adapts to theme.
+**Styling:** Trigger follows surface consistency rule — `#e8eaed` <span style="color: #e8eaed">&block;&block;&block;&block;</span> background independent of theme. Calendar dropdown adapts to theme.
 
 **Attributes:** `label`, `value` (YYYY-MM-DD), `placeholder`, `theme`, `readonly`, `disabled`
 
@@ -249,7 +249,7 @@ Date picker with calendar dropdown.
 #### `as-time`
 Time picker with hour/minute/AM-PM selectors.
 
-**Styling:** Trigger follows surface consistency rule — `#e8eaed` background independent of theme. Time picker dropdown adapts to theme.
+**Styling:** Trigger follows surface consistency rule — `#e8eaed` <span style="color: #e8eaed">&block;&block;&block;&block;</span> background independent of theme. Time picker dropdown adapts to theme.
 
 #### `as-checkbox` / `as-check`
 Single checkbox with label.
@@ -455,10 +455,10 @@ Action button with variants.
 **Events:** `button-tap` (when no link/message)
 
 **Variants:**
-- **Primary**: Blue background (`#3b82f6`), white text
-- **Secondary**: Gray background (`#e5e7eb`), dark text
+- **Primary**: Blue background (`#3b82f6` <span style="color: #3b82f6">&block;&block;&block;&block;</span>), white text
+- **Secondary**: Gray background (`#e5e7eb` <span style="color: #e5e7eb">&block;&block;&block;&block;</span>), dark text
 
-#### `as-cards`
+#### `as-index`
 Card index with filtering and tag-based search. Displays a grid of linked cards.
 
 **Attributes:**
@@ -467,6 +467,7 @@ Card index with filtering and tag-based search. Displays a grid of linked cards.
 |-----------|------|---------|-------------|
 | `title` | string | `''` | Optional heading |
 | `src` | string | `''` | URL to fetch JSON data from |
+| `lang` | string | `''` | Language filter (e.g. `en`, `es`) |
 | `filtering` | boolean | `false` | Enable filter input + tag filter |
 | `theme` | `light\|dark` | `''` | Theme |
 
@@ -484,6 +485,7 @@ Card index with filtering and tag-based search. Displays a grid of linked cards.
 | `description` | string | Card body text |
 | `url` | string | Link target |
 | `tags` | string[] | Tag labels (for tag filter) |
+| `language` | string | Language code (e.g. `en`, `es`) for filtering |
 | `hide` | boolean | If true, item is filtered out |
 
 **Events:**
@@ -496,14 +498,14 @@ Card index with filtering and tag-based search. Displays a grid of linked cards.
 |---------|-------|
 | Card background | `white` |
 | Card shadow | `0 3px 10px 0 #aaa` |
-| Card hover | `scale(1.05)`, shadow `0 4px 14px 0 #1676f3`, text `#1676f3` |
-| Card title | `#1676f3` (azul primario), `font-weight: 600` |
-| Card description | `#6b7280` (gris medio) |
-| Tag background | `#f3f4f6` (gris claro), sin borde |
-| Tag text | `#374151` (gris oscuro) |
-| Tag hover background | `#e5e7eb` |
+| Card hover | `scale(1.05)`, shadow `0 4px 14px 0 #1676f3` <span style="color: #1676f3">&block;&block;&block;&block;</span>, text `#1676f3` <span style="color: #1676f3">&block;&block;&block;&block;</span> |
+| Card title | `#1676f3` <span style="color: #1676f3">&block;&block;&block;&block;</span> (azul primario), `font-weight: 600` |
+| Card description | `#6b7280` <span style="color: #6b7280">&block;&block;&block;&block;</span> (gris medio) |
+| Tag background | `#f3f4f6` <span style="color: #f3f4f6">&block;&block;&block;&block;</span> (gris claro), sin borde |
+| Tag text | `#374151` <span style="color: #374151">&block;&block;&block;&block;</span> (gris oscuro) |
+| Tag hover background | `#e5e7eb` <span style="color: #e5e7eb">&block;&block;&block;&block;</span> |
 | Tag selected | `background: #3b82f6`, text `white` |
-| Filter input | Surface consistency `#e8eaed`, texto `#1a1a1a`, `border-radius: 20px` |
+| Filter input | Surface consistency `#e8eaed` <span style="color: #e8eaed">&block;&block;&block;&block;</span>, `border-radius: 20px` |
 | Grid | `repeat(auto-fit, minmax(12rem, 1fr))`, `gap: 1.5rem`, `grid-auto-rows: 12rem` |
 
 **Dark theme (`theme="dark"`):**
@@ -512,18 +514,18 @@ Card index with filtering and tag-based search. Displays a grid of linked cards.
 | Card background | `rgba(255,255,255,0.06)` |
 | Card shadow | `0 2px 8px 0 rgba(0,0,0,0.4)` |
 | Card `backdrop-filter` | `blur(2px)` |
-| Card hover | `scale(1.03)`, shadow `0 3px 12px 0 #3b82f6`, text `#60a5fa` |
-| Card title | `#60a5fa`, `font-weight: 600` |
-| Card description | `#9ca3af` |
-| Tag background | `transparent`, borde `#4b5563` |
-| Tag text | `#d1d5db` |
-| Tag hover | `rgba(255,255,255,0.08)`, borde `#60a5fa` |
-| Tag selected | `background: #3b82f6`, borde `#3b82f6`, text `white` |
-| Title heading | `#f3f4f6` |
+| Card hover | `scale(1.03)`, shadow `0 3px 12px 0 #3b82f6` <span style="color: #3b82f6">&block;&block;&block;&block;</span>, text `#60a5fa` <span style="color: #60a5fa">&block;&block;&block;&block;</span> |
+| Card title | `#60a5fa` <span style="color: #60a5fa">&block;&block;&block;&block;</span>, `font-weight: 600` |
+| Card description | `#9ca3af` <span style="color: #9ca3af">&block;&block;&block;&block;</span> |
+| Tag background | `transparent`, borde `#4b5563` <span style="color: #4b5563">&block;&block;&block;&block;</span> |
+| Tag text | `#d1d5db` <span style="color: #d1d5db">&block;&block;&block;&block;</span> |
+| Tag hover | `rgba(255,255,255,0.08)`, borde `#60a5fa` <span style="color: #60a5fa">&block;&block;&block;&block;</span> |
+| Tag selected | `background: #3b82f6`, borde `#3b82f6` <span style="color: #3b82f6">&block;&block;&block;&block;</span>, text `white` |
+| Title heading | `#f3f4f6` <span style="color: #f3f4f6">&block;&block;&block;&block;</span> |
 
 **Shared rules:**
-- Filter input background always `#e8eaed` independent of theme (surface consistency)
-- `.card-title` always has `border-bottom: 0.1px solid #aaa` (light) / `#4b5563` (dark)
+- Filter input background always `#e8eaed` <span style="color: #e8eaed">&block;&block;&block;&block;</span> independent of theme (surface consistency)
+- `.card-title` always has `border-bottom: 0.1px solid #aaa` (light) / `#4b5563` <span style="color: #4b5563">&block;&block;&block;&block;</span> (dark)
 - Grid collapses to single column at ≤580px
 - Tags use `border-radius: 0.375rem` and `transition: background-color 0.2s, color 0.2s, border-color 0.2s`
 - Cards use `transition: transform 0.3s, box-shadow 0.3s`
@@ -531,10 +533,10 @@ Card index with filtering and tag-based search. Displays a grid of linked cards.
 **Data sources (either works):**
 ```html
 <!-- Via src attribute (auto-fetch) -->
-<as-cards src="/api/data.json" filtering></as-cards>
+<as-index src="/api/data.json" filtering></as-index>
 
 <!-- Via JS property (manual) -->
-<as-cards id="myCards" filtering></as-cards>
+<as-index id="myCards" filtering></as-index>
 <script>
   myCards.items = [
     { title: 'Hello', description: 'World', tags: ['demo'], url: '/page' }
@@ -552,7 +554,7 @@ Confirm dialog triggered by button.
 #### `as-event`
 Button-like input that dispatches custom event (for triggering popups/modals).
 
-**Styling:** Trigger follows surface consistency rule — `#e8eaed` background independent of theme. Chevron always `#1f2937`.
+**Styling:** Trigger follows surface consistency rule — `#e8eaed` <span style="color: #e8eaed">&block;&block;&block;&block;</span>.
 
 **Attributes:** `label`, `value`, `placeholder`, `event` (event name, default: `'event-trigger'`), `theme`, `readonly`, `disabled`
 
@@ -571,25 +573,16 @@ Context menu/popup with smart positioning.
 
 **Features:** Auto-closes on outside click, confirms dangerous actions (delete/remove/destroy)
 
-<!--
-
-## Bundle Size
-
-| Version | Framework | Build Output (gzipped) |
-|---------|-----------|------------------------|
-| v2.0.0 (x21) | Lit 3 | ~23 KB |
-| v3.0.0 (x22) | SolidJS | ~24 KB |
-
--->
-
 ## Browser Support
+
+Theorically you can use native web components (custom elements) in:
 
 - Chrome 90+
 - Firefox 88+
 - Safari 15+
 - Edge 90+
 
-Requires: `Custom Elements v1`, `Shadow DOM v1`, `ES2020` (nullish coalescing, optional chaining)
+> Requires: `Custom Elements v1`, `Shadow DOM v1`, `ES2020` (nullish coalescing, optional chaining)
 
 ---
 

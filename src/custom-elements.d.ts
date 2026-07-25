@@ -167,9 +167,10 @@ declare module 'solid-js' {
         readonly?: boolean
         disabled?: boolean
       }
-      'as-cards': {
+      'as-index': {
         title?: string
         src?: string
+        lang?: string
         filtering?: boolean
         theme?: 'light' | 'dark'
         items?: any[]

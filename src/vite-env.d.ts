@@ -22,7 +22,7 @@ declare namespace JSX {
     'as-confirm': any
     'as-event': any
     'as-popup': any
-    'as-cards': any
+    'as-index': any
     'as-form': any
   }
 }

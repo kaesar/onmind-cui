@@ -13,7 +13,7 @@ Component | Description
 `as-complete` | Autocomplete/ComboBox component
 `as-box` | Similar to Card to group components inside
 `as-button` | Common Button component
-`as-cards` | Card index with filtering and tag search
+`as-index` | Card index with filtering and tag search
 `as-check` | Common Checkbox component
 `as-confirm` | Dialog with Modal with confirm action
 `as-datagrid` | Data grid/table with sorting, filtering and pagination
@@ -33,7 +33,8 @@ Component | Description
 `as-upload` | File upload component with drag-and-drop support
 `as-video` | Common Video component (for YouTube links)
 
-> Tu use, you can include this `tags` in simple Markdown files or Web Apps.
+> To use, you can include this `tags` in simple **Markdown** files or **Web Apps**.  
+> The prefix `as-` could meaning **application screen/system**. Just prefix is required in web-components.
 
 ## How to install it ?
 
@@ -42,10 +43,19 @@ Component | Description
 3. Install modules: `bun install`
 4. Lauch vite: `bun start`
 
-> You get the `cui.js` file under `dist` folder and put in a `script` tag in `html` (e.g. in `head`)
+> You get the `cui.js` file under `dist` folder and put in a `script` tag in `html` (e.g. in `head`)  
+> See [DESIGN.md](./DESIGN.md) & [HELP.md](./HELP.md) (in Spanish)
+
+## Bundle Size
+
+| Version | Framework | Build Output (gzipped) |
+|---------|-----------|------------------------|
+| v2.0.0 (x21) | Lit 3 | ~23 KB |
+| v3.0.0 (x22) | SolidJS | ~24 KB |
+
+> **SolidJS** is the library (Framework) used in the current version
 
 <!--
-
 ## Creating New Components
 
 To add a new component to CUI:
@@ -142,5 +152,4 @@ bun run build
 | **TypeScript** | Add types to `vite-env.d.ts` and `custom-elements.d.ts` |
 | **Export** | Add to `src/index-solid.ts` |
 | **Demo** | Add example in `index.html` |
-
 -->
