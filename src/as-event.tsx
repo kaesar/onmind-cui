@@ -53,7 +53,7 @@ class AsEvent extends HTMLElement {
         if (mutation.type === 'attributes') {
           const attrName = mutation.attributeName
           if (attrName === 'label') setLabel(this.getAttribute('label') || '')
-          if (attrName === 'value') setValue(this._value || this.getAttribute('value') || '')
+          if (attrName === 'value') setValue(this.getAttribute('value') || '')
           if (attrName === 'placeholder') setPlaceholder(this.getAttribute('placeholder') || '')
           if (attrName === 'event') setEvent(this.getAttribute('event') || 'event-trigger')
           if (attrName === 'readonly') setReadonly(this.hasAttribute('readonly'))

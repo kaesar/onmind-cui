@@ -4,6 +4,7 @@ import { createStandardAttributes } from './attribute-observer'
 
 class AsTime extends HTMLElement {
   private dispose?: () => void
+  private _closeHandler?: (e: Event) => void
 
   connectedCallback() {
     const [label, setLabel] = createSignal(this.getAttribute('label') || '')
@@ -30,14 +31,37 @@ class AsTime extends HTMLElement {
       }))
     }
 
-    const displayValue = () => {
-      if (value()) {
-        return value()
-      }
-      return placeholder() || 'Select time'
+    const isPlaceholder = () => !value()
+
+    const validateTime = (input: string) => {
+      const match = input.match(/^([01]?\d|2[0-3]):([0-5]\d)$/)
+      if (!match) return false
+      return true
     }
 
-    const isPlaceholder = () => !value()
+    const handleInputChange = (e: Event) => {
+      const target = e.target as HTMLInputElement
+      const inputValue = target.value
+      if (inputValue === '') {
+        setValue('')
+        return
+      }
+      if (validateTime(inputValue)) {
+        setValue(inputValue)
+        const [h, m] = inputValue.split(':').map(Number)
+        const h12 = h % 12 === 0 ? 12 : h % 12
+        setHour(h12.toString().padStart(2, '0'))
+        setMinute(m.toString().padStart(2, '0'))
+        setPeriod(h < 12 ? 'AM' : 'PM')
+      }
+    }
+
+    const handleInputBlur = (e: Event) => {
+      const target = e.target as HTMLInputElement
+      if (target.value && !validateTime(target.value)) {
+        target.value = value() || ''
+      }
+    }
 
     // Observar cambios en atributos usando utilidad centralizada
     createStandardAttributes(this, {
@@ -86,8 +110,25 @@ class AsTime extends HTMLElement {
           .time-trigger.placeholder {
             color: #6b7280;
           }
-          .time-trigger:focus {
+          .time-trigger:focus-within {
             border-color: #1676f3;
+          }
+          .time-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 0.9375rem;
+            color: #1a1a1a;
+            cursor: pointer;
+          }
+          .time-input::placeholder {
+            color: #6b7280;
+          }
+          .time-input:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
           }
           .icon {
             margin-left: 0.5rem;
@@ -97,6 +138,7 @@ class AsTime extends HTMLElement {
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            cursor: pointer;
           }
           .icon svg {
             width: 18px;
@@ -203,20 +245,27 @@ class AsTime extends HTMLElement {
           {label() && <label>{label()}</label>}
           <div
             class={`time-trigger ${isPlaceholder() ? 'placeholder' : ''}`}
-            tabindex="0"
             aria-disabled={disabled()}
-            onClick={() => { if (disabled() || readonly()) return; setOpen(!open()) }}
-            onBlur={() => setTimeout(() => setOpen(false), 200)}
           >
-            <span>{displayValue()}</span>
-            <span class="icon">
+            <input
+              type="text"
+              class="time-input"
+              value={value() || ''}
+              placeholder={placeholder() || 'Select time'}
+              readonly={readonly()}
+              disabled={disabled()}
+              onFocus={() => { if (!disabled() && !readonly()) setOpen(true) }}
+              onBlur={(e) => { handleInputBlur(e); setOpen(false) }}
+              onInput={handleInputChange}
+            />
+            <span class="icon" onClick={() => { if (disabled() || readonly()) return; setOpen(!open()) }}>
               <svg viewBox="0 0 24 24">
                 <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/>
               </svg>
             </span>
           </div>
           {open() && (
-            <div class="dropdown">
+            <div class="dropdown" onMouseDown={(e) => e.preventDefault()}>
               <div class="time-display">{hour()}:{minute()} {period()}</div>
               <div class="selectors">
                 <div class="column">
@@ -282,10 +331,18 @@ class AsTime extends HTMLElement {
 
     const shadowRoot = this.attachShadow({ mode: 'open' })
     this.dispose = render(Component, shadowRoot)
+
+    this._closeHandler = (e: Event) => {
+      if (!this.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('click', this._closeHandler, true)
   }
 
   disconnectedCallback() {
     this.dispose?.()
+    if (this._closeHandler) document.removeEventListener('click', this._closeHandler, true)
   }
 
   static get observedAttributes() {

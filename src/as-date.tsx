@@ -4,6 +4,7 @@ import { createStandardAttributes } from './attribute-observer'
 
 class AsDate extends HTMLElement {
   private dispose?: () => void
+  private _closeHandler?: (e: Event) => void
 
   connectedCallback() {
     const [label, setLabel] = createSignal(this.getAttribute('label') || '')
@@ -77,14 +78,38 @@ class AsDate extends HTMLElement {
       }))
     }
 
-    const displayValue = () => {
-      if (value()) {
-        return value()
-      }
-      return placeholder() || 'Select date'
+    const isPlaceholder = () => !value()
+
+    const validateDate = (input: string) => {
+      const match = input.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+      if (!match) return false
+      const [, , m, d] = match.map(Number)
+      if (m < 1 || m > 12) return false
+      if (d < 1 || d > 31) return false
+      return true
     }
 
-    const isPlaceholder = () => !value()
+    const handleInputChange = (e: Event) => {
+      const target = e.target as HTMLInputElement
+      const inputValue = target.value
+      if (inputValue === '') {
+        setValue('')
+        return
+      }
+      if (validateDate(inputValue)) {
+        setValue(inputValue)
+        const [y, m] = inputValue.split('-').map(Number)
+        setYear(y)
+        setMonth(m - 1)
+      }
+    }
+
+    const handleInputBlur = (e: Event) => {
+      const target = e.target as HTMLInputElement
+      if (target.value && !validateDate(target.value)) {
+        target.value = value() || ''
+      }
+    }
 
     const Component = () => (
       <>
@@ -123,8 +148,25 @@ class AsDate extends HTMLElement {
           .date-trigger.placeholder {
             color: #6b7280;
           }
-          .date-trigger:focus {
+          .date-trigger:focus-within {
             border-color: #1676f3;
+          }
+          .date-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 0.9375rem;
+            color: #1a1a1a;
+            cursor: pointer;
+          }
+          .date-input::placeholder {
+            color: #6b7280;
+          }
+          .date-input:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
           }
           .icon {
             margin-left: 0.5rem;
@@ -134,6 +176,7 @@ class AsDate extends HTMLElement {
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            cursor: pointer;
           }
           .icon svg {
             width: 18px;
@@ -252,13 +295,20 @@ class AsDate extends HTMLElement {
           {label() && <label>{label()}</label>}
           <div
             class={`date-trigger ${isPlaceholder() ? 'placeholder' : ''}`}
-            tabindex="0"
             aria-disabled={disabled()}
-            onClick={() => { if (disabled() || readonly()) return; setOpen(!open()) }}
-            onBlur={() => setTimeout(() => setOpen(false), 200)}
           >
-            <span>{displayValue()}</span>
-            <span class="icon">
+            <input
+              type="text"
+              class="date-input"
+              value={value() || ''}
+              placeholder={placeholder() || 'Select date'}
+              readonly={readonly()}
+              disabled={disabled()}
+              onFocus={() => { if (!disabled() && !readonly()) setOpen(true) }}
+              onBlur={(e) => { handleInputBlur(e); setOpen(false) }}
+              onInput={handleInputChange}
+            />
+            <span class="icon" onClick={() => { if (disabled() || readonly()) return; setOpen(!open()) }}>
               <svg viewBox="0 0 24 24">
                 <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/>
               </svg>
@@ -296,10 +346,18 @@ class AsDate extends HTMLElement {
 
     const shadowRoot = this.attachShadow({ mode: 'open' })
     this.dispose = render(Component, shadowRoot)
+
+    this._closeHandler = (e: Event) => {
+      if (!this.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('click', this._closeHandler, true)
   }
 
   disconnectedCallback() {
     this.dispose?.()
+    if (this._closeHandler) document.removeEventListener('click', this._closeHandler, true)
   }
 
   static get observedAttributes() {
