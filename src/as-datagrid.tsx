@@ -155,16 +155,22 @@ class AsDatagrid extends HTMLElement {
           .filter-input {
             width: 160px;
             padding: 0.5rem 0.75rem;
-            border: none;
+            border: 1px solid transparent;
             border-radius: 4px;
             font-size: 0.9375rem;
             outline: none;
             background: #f5f5f5;
             color: #1f2937;
           }
+          .filter-input:focus {
+            border-color: #1676f3;
+          }
           :host([theme="dark"]) .filter-input {
             background: #374151;
             color: #f3f4f6;
+          }
+          :host([theme="dark"]) .filter-input:focus {
+            border-color: #1676f3;
           }
           .table-wrapper { overflow-x: auto; }
           table { width: 100%; border-collapse: collapse; }

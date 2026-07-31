@@ -303,6 +303,8 @@ Date picker with calendar dropdown.
 
 **Events:** `value-changed` (detail: `{ value }`)
 
+**Input mask & validation:** The input applies a mask that auto-inserts `-` separators as the user types digits (e.g., `20241212` → `2024-12-12`). When the masked result is a complete valid date, the calendar syncs to the typed month/year and `value-changed` is dispatched. Validation runs on blur: if the value is incomplete or invalid, the border turns red (`#dc2626`), an error message appears below the input, and the input restores to the last valid value. The blue focus border (`#1676f3`) takes precedence over red while focused. Pressing Tab while the popup is open closes it before moving focus to the next field (the icon span has `tabindex="-1"` to exclude it from the tab order).
+
 #### `as-time`
 Time picker with hour/minute/AM-PM selectors.
 
@@ -330,6 +332,8 @@ Time picker with hour/minute/AM-PM selectors.
 | Option hover | `#374151` <span style="color: #374151">&block;&block;&block;&block;</span> |
 | Option selected (column) | `background: #1e3a5f` <span style="color: #1e3a5f">&block;&block;&block;&block;</span>, text `#60a5fa` <span style="color: #60a5fa">&block;&block;&block;&block;</span> |
 | Option selected (AM/PM) | `background: #3b82f6` <span style="color: #3b82f6">&block;&block;&block;&block;</span>, text `#ffffff` |
+
+**Input mask & validation:** The input applies a mask that auto-inserts the `:` separator as the user types digits (e.g., `1430` → `14:30`). When the masked result is a complete valid time, the clock selector syncs and `value-changed` is dispatched. Validation runs on blur: if the value is incomplete or invalid, the border turns red (`#dc2626`), an error message appears below the input, and the input restores to the last valid value. The blue focus border (`#1676f3`) takes precedence while focused. Pressing Tab while the popup is open closes it before moving focus to the next field.
 
 #### `as-checkbox` / `as-check`
 Single checkbox with label.

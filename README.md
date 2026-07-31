@@ -1,4 +1,4 @@
-# OnMind-CUI
+# OnMind-CUI v3
 
 Core User Interface (**CUI**), Native Web Components for cross use in **UI** with Content Pages (like Markdown) and Simple Web Apps. Inspired in [**Vaadin Web Components**](https://github.com/vaadin/web-components) but not based on it.
 
@@ -51,9 +51,9 @@ Component | Description
 | Version | Framework | Build Output (gzipped) |
 |---------|-----------|------------------------|
 | v2.0.0 (x21) | Lit 3 | ~23 KB |
-| v3.0.0 (x22) | SolidJS | ~25 KB |
+| v3.0.0 (x22) | SolidJS | ~26 KB |
 
-> **SolidJS** is the library (Framework) used in the current version with some optimizations
+> **SolidJS** is the library (Framework) for current version with some optimizations
 
 <!--
 ## Creating New Components

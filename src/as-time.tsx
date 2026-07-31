@@ -17,6 +17,7 @@ class AsTime extends HTMLElement {
     const [hour, setHour] = createSignal('12')
     const [minute, setMinute] = createSignal('00')
     const [period, setPeriod] = createSignal('AM')
+    const [valid, setValid] = createSignal(true)
 
     const updateValue = () => {
       let hour24 = parseInt(hour())
@@ -39,20 +40,28 @@ class AsTime extends HTMLElement {
       return true
     }
 
+    const formatTimeWithMask = (digits: string) => {
+      if (digits.length <= 2) return digits
+      return `${digits.slice(0, 2)}:${digits.slice(2, 4)}`
+    }
+
     const handleInputChange = (e: Event) => {
       const target = e.target as HTMLInputElement
-      const inputValue = target.value
-      if (inputValue === '') {
-        setValue('')
-        return
-      }
-      if (validateTime(inputValue)) {
-        setValue(inputValue)
-        const [h, m] = inputValue.split(':').map(Number)
+      const digits = target.value.replace(/\D/g, '')
+      const formatted = formatTimeWithMask(digits)
+      target.value = formatted
+      setValue(formatted)
+      if (validateTime(formatted)) {
+        const [h, m] = formatted.split(':').map(Number)
         const h12 = h % 12 === 0 ? 12 : h % 12
         setHour(h12.toString().padStart(2, '0'))
         setMinute(m.toString().padStart(2, '0'))
         setPeriod(h < 12 ? 'AM' : 'PM')
+        this.dispatchEvent(new CustomEvent('value-changed', {
+          detail: { value: formatted },
+          bubbles: true,
+          composed: true
+        }))
       }
     }
 
@@ -60,6 +69,9 @@ class AsTime extends HTMLElement {
       const target = e.target as HTMLInputElement
       if (target.value && !validateTime(target.value)) {
         target.value = value() || ''
+        setValid(false)
+      } else {
+        setValid(true)
       }
     }
 
@@ -110,8 +122,16 @@ class AsTime extends HTMLElement {
           .time-trigger.placeholder {
             color: #6b7280;
           }
+          .time-trigger.invalid {
+            border-color: #dc2626;
+          }
           .time-trigger:focus-within {
             border-color: #1676f3;
+          }
+          .error-msg {
+            font-size: 0.75rem;
+            color: #dc2626;
+            margin-top: 0.25rem;
           }
           .time-input {
             flex: 1;
@@ -244,7 +264,7 @@ class AsTime extends HTMLElement {
         <div class="field">
           {label() && <label>{label()}</label>}
           <div
-            class={`time-trigger ${isPlaceholder() ? 'placeholder' : ''}`}
+            class={`time-trigger ${isPlaceholder() ? 'placeholder' : ''} ${!valid() && !disabled() ? 'invalid' : ''}`}
             aria-disabled={disabled()}
           >
             <input
@@ -254,16 +274,18 @@ class AsTime extends HTMLElement {
               placeholder={placeholder() || 'Select time'}
               readonly={readonly()}
               disabled={disabled()}
-              onFocus={() => { if (!disabled() && !readonly()) setOpen(true) }}
+              onKeyDown={(e) => { if (e.key === 'Tab') setOpen(false) }}
+              onFocus={() => { setValid(true); if (!disabled() && !readonly()) setOpen(true) }}
               onBlur={(e) => { handleInputBlur(e); setOpen(false) }}
               onInput={handleInputChange}
             />
-            <span class="icon" onClick={() => { if (disabled() || readonly()) return; setOpen(!open()) }}>
+            <span class="icon" onClick={() => { if (disabled() || readonly()) return; setOpen(!open()) }} tabindex="-1">
               <svg viewBox="0 0 24 24">
                 <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/>
               </svg>
             </span>
           </div>
+          {!valid() && !disabled() && <span class="error-msg">* Use: HH:MM (24h)</span>}
           {open() && (
             <div class="dropdown" onMouseDown={(e) => e.preventDefault()}>
               <div class="time-display">{hour()}:{minute()} {period()}</div>
