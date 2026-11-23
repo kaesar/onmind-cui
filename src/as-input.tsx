@@ -98,6 +98,14 @@ class AsInput extends HTMLElement {
 
     const shadowRoot = this.attachShadow({ mode: 'open' })
     this.dispose = render(Component, shadowRoot)
+
+    // autofocus opt-in: focuses the inner input after mount (the native
+    // attribute does not pierce shadow DOM).
+    if (this.hasAttribute('autofocus')) {
+      requestAnimationFrame(() => {
+        shadowRoot.querySelector('input')?.focus({ preventScroll: true })
+      })
+    }
   }
 
   disconnectedCallback() {

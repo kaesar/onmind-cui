@@ -9,8 +9,21 @@ interface CardItem {
   url?: string
   tags?: string[]
   language?: string
-  hide?: boolean
+  hide?: boolean | number
   [key: string]: any
+}
+
+// xid session (same convention as PUB: sessionStorage `xidCurrentSession`
+// holding { signedIn, accessToken }). Evaluated on mount and `src` change only.
+function hasActiveSession(storageKey: string): boolean {
+  try {
+    const raw = sessionStorage.getItem(storageKey)
+    if (!raw) return false
+    const s = JSON.parse(raw)
+    return !!(s && s.signedIn && s.accessToken)
+  } catch {
+    return false
+  }
 }
 
 class AsIndex extends HTMLElement {
@@ -32,6 +45,8 @@ class AsIndex extends HTMLElement {
     const [title, setTitle] = createSignal(this.getAttribute('title') || '')
     const [src, setSrc] = createSignal(this.getAttribute('src') || '')
     const [filtering, setFiltering] = createSignal(this.hasAttribute('filtering'))
+    const [showProtected, setShowProtected] = createSignal(this.hasAttribute('show-protected'))
+    const [sessionKey, setSessionKey] = createSignal(this.getAttribute('session-key') || 'xidCurrentSession')
     const [searchQuery, setSearchQuery] = createSignal('')
     const [selectedTags, setSelectedTags] = createSignal<string[]>([])
     const [items, setItems] = createSignal<CardItem[]>(this._items)
@@ -71,8 +86,15 @@ class AsIndex extends HTMLElement {
         // Skip if this request was aborted (another one superseded it)
         if (controller.signal.aborted) return
         const lang = this.currentLang()
+        // hide levels: 0 public, 1 published-unlisted (landing), 2 protected, 3+ fully hidden.
+        // Listing hides 1-2 when logged out, shows 1-2 when show-protected + session (lock badge marks level 2); page access stays site-side.
+        const authed = showProtected() && hasActiveSession(sessionKey())
+        const level = (h: boolean | number | undefined) => (h !== undefined && h !== null && Number(h) >= 3 ? 3 : h === 2 ? 2 : h ? 1 : 0)
         const list = (Array.isArray(data) ? data : [])
-          .filter((e: CardItem) => !e.hide && (!lang || !e.language || e.language === lang))
+          .filter((e: CardItem) => {
+            const lv = level(e.hide)
+            return (!lv || (authed && (lv === 1 || lv === 2))) && (!lang || !e.language || e.language === lang)
+          })
           .sort((a: CardItem, b: CardItem) =>
             (a.title || a.name || '').localeCompare(b.title || b.name || '')
           )
@@ -97,6 +119,14 @@ class AsIndex extends HTMLElement {
             if (this.getAttribute('src')) loadData(this.getAttribute('src') || '')
           }
           if (attr === 'filtering') setFiltering(this.hasAttribute('filtering'))
+          if (attr === 'show-protected') {
+            setShowProtected(this.hasAttribute('show-protected'))
+            if (src()) loadData(src())
+          }
+          if (attr === 'session-key') {
+            setSessionKey(this.getAttribute('session-key') || 'xidCurrentSession')
+            if (src()) loadData(src())
+          }
           if (attr === 'lang') {
             if (src()) loadData(src())
           }
@@ -357,7 +387,7 @@ class AsIndex extends HTMLElement {
             <For each={filteredItems()}>
               {(item) => (
                 <a class="card" href={item.url || '#'} onClick={(e) => onCardClick(e, item)}>
-                  <div class="card-title">{item.title || item.name || ''}</div>
+                  <div class="card-title">{item.hide === 2 ? '🔒 ' : ''}{item.title || item.name || ''}</div>
                   <div class="card-desc">
                     {item.description || `About: ${item.name || item.title || ''}`}
                   </div>
@@ -394,7 +424,7 @@ class AsIndex extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['title', 'src', 'filtering', 'theme', 'lang']
+    return ['title', 'src', 'filtering', 'theme', 'lang', 'show-protected', 'session-key']
   }
 }
 

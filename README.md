@@ -13,7 +13,7 @@ Component | Description
 `as-complete` | Autocomplete/ComboBox component
 `as-box` | Similar to Card to group components inside
 `as-button` | Common Button component
-`as-index` | Card index with filtering and tag search
+`as-index` | Card index with filtering and tag search (`show-protected` lists `hide: 1` and `hide: 2` items when a session exists in `sessionStorage`, key via `session-key`, default `xidCurrentSession`; lock badge marks level 2; level 3+ never listed)
 `as-check` | Common Checkbox component
 `as-confirm` | Dialog with Modal with confirm action
 `as-datagrid` | Data grid/table with sorting, filtering and pagination
